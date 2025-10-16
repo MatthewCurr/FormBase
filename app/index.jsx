@@ -65,7 +65,7 @@ export default function Home() {
               size="lg"
               className="bg-primary-500 px-6 py-2 rounded-full mt-10 w-full"
               onPress={() => {
-                router.push('/tabs/tab1');
+                router.push('/tabs/Forms');
               }}
             >
               <ButtonText>Get Started</ButtonText>

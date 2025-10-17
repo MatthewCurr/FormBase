@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import { Icon } from '@/components/ui/icon';
 import { LinearGradient } from '@/components/custom/LinearGradient';
 import FileStack from '@/assets/icons/FileStack';
+import { useTheme } from '@react-navigation/native';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -29,30 +30,36 @@ import { useColorScheme } from '@/components/useColorScheme';
 export default function Home() {
   const router = useRouter();
 
+  const colours = useTheme().colors; 
   const colorMode = useColorScheme();
   const isDark = colorMode === 'dark';
 
   // Invert main and secondary colors based on dark mode
-  const mainColor = isDark ? '#fff' : '#000';
-  const secondaryColor = isDark ? '#d1d5db' : '#6b7280';
+  const mainColor = isDark ? '#5B5551' : '#EBEAE9';
+  const secondaryColor = isDark ? '#272423' : '#C7C4BF';
+
+  const gradientColors =
+    isDark
+      ? ['#166D3B', '#000000'] // darker greens
+      : ['#3EB489', '#90EE90']; // lighter greens
 
   return (
-    <Box className="flex-1 bg-background-500 h-[100vh]">
+    <Box className="flex-1 bg-background-800">
 
       {/* "Kermit's Tea" Gradient from eggradients.com */}
       <LinearGradient
-        colors={['#3EB489', '#90EE90']}
+        colors={gradientColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="absolute inset-0"
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
+
       <ScrollView
         style={{ height: '100%' }}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingBottom: 100}}
       >
         <Box className="flex flex-1 items-center mx-5 lg:my-24 lg:mx-32 py-safe">
-          
-          <Box className="flex-1 justify-center items-center mb-64 w-[300px] lg:h-[160px] lg:w-[400px]">
+          <Box className="flex-1 justify-center items-center w-[300px] lg:h-[160px] lg:w-[400px]">
             {/* SVG FileStack component */}
             <FileStack color={mainColor} secondaryColor={secondaryColor} />
             <Text className="dark:text-white  text-4xl font-semibold text-black">FormBase</Text>
@@ -62,16 +69,16 @@ export default function Home() {
 
             {/* Get Started Button */}
             <Button
-              size="lg"
-              className="bg-primary-500 px-6 py-2 rounded-full mt-10 w-full"
+              size="xl"
+              style={{ backgroundColor: colours.card }}
+              className=" px-6 py-2 rounded-full mt-10 w-full"
               onPress={() => {
                 router.push('/tabs/Forms');
               }}
             >
-              <ButtonText>Get Started</ButtonText>
+              <ButtonText style={{ color: colours.text }}>Get Started</ButtonText>
             </Button>
           </Box>
-
         </Box>
       </ScrollView>
     </Box>

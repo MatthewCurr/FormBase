@@ -9,11 +9,40 @@ export const unstable_settings = {
 };
 
 import { Stack } from 'expo-router';
+import { ScrollView } from 'react-native';
+import { Box } from '@/components/ui/box';
+import { LinearGradient } from '@/components/custom/LinearGradient';
+import { useColorScheme } from '@/components/useColorScheme';
 
 export default function AppLayout() {
+
+  const colorMode = useColorScheme();
+  const isDark = colorMode === 'dark';
+
+  const gradientColors =
+    isDark
+      ? ['#166D3B', '#000000'] // darker greens
+      : ['#3EB489', '#90EE90']; // lighter greens
+
   return (
-    <Stack>
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    </Stack>
+    <Box className="bg-background-500">
+
+      {/* "Kermit's Tea" Gradient from eggradients.com */}
+      <LinearGradient
+        colors={gradientColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+      />
+
+      <ScrollView
+        style={{ height: '100%' }}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </ScrollView>
+    </Box>
   );
 }

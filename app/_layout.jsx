@@ -2,10 +2,11 @@ import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {
-  DarkTheme,
-  DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+
+import { LightThemeCustom, DarkThemeCustom } from '@/theme';
+
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
@@ -48,9 +49,9 @@ function RootLayoutNav() {
 
   return (
     <GluestackUIProvider mode={colorMode}>
-      <ThemeProvider value={colorMode === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorMode === 'dark' ? DarkThemeCustom : LightThemeCustom}>
         <Slot />
-        {pathname === '/' && (
+        {/* {pathname === '/' && ( */}
           <Fab
             onPress={() =>
               setColorMode(colorMode === 'dark' ? 'light' : 'dark')
@@ -60,7 +61,7 @@ function RootLayoutNav() {
           >
             <FabIcon as={colorMode === 'dark' ? MoonIcon : SunIcon} />
           </Fab>
-        )}
+        {/* )} */}
       </ThemeProvider>
     </GluestackUIProvider>
   );

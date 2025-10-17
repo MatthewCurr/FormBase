@@ -6,11 +6,10 @@ export const LightThemeCustom = {
     ...DefaultTheme.colors,
     primary: '#10B981', 
     background: '#ECFDF5',
-    card: '#D1FAE5',
+    card: '#c7ebca',
     text: '#065F46',  
     border: '#C8E6C9',
     notification: '#3EB489',
-    button: '#10B981',
   },
 };
 

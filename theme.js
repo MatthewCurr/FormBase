@@ -1,0 +1,29 @@
+import { DefaultTheme, DarkTheme } from '@react-navigation/native';
+
+export const LightThemeCustom = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#10B981', 
+    background: '#ECFDF5',
+    card: '#D1FAE5',
+    text: '#065F46',  
+    border: '#C8E6C9',
+    notification: '#3EB489',
+    button: '#10B981',
+  },
+};
+
+export const DarkThemeCustom = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    primary: '#34D399',
+    // background: '#0E1412',
+    background: '#022C22',
+    card: '#064E3B',
+    text: '#A7F3D0', 
+    border: '#222222',
+    notification: '#3EB489',
+  },
+};

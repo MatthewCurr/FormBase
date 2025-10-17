@@ -6,7 +6,7 @@ const FileStack = ({ width = 300, height = 300, color = '#000', secondaryColor =
     <Svg
       width={width}
       height={height}
-      viewBox="0 0 200 200"
+      viewBox="35 40 130 120"
     >
       {/* Back layer (most transparent) */}
       <G opacity="0.3">

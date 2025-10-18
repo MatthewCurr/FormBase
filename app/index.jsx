@@ -40,11 +40,11 @@ export default function Home() {
 
   const gradientColors =
     isDark
-      ? ['#166D3B', '#000000'] // darker greens
+      ? ['#166D3B', '#081912'] // darker greens
       : ['#3EB489', '#90EE90']; // lighter greens
 
   return (
-    <Box className="flex-1 bg-background-800">
+    <Box className="flex-1 bg-transparent">
 
       {/* "Kermit's Tea" Gradient from eggradients.com */}
       <LinearGradient

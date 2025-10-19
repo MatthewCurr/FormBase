@@ -28,6 +28,9 @@ export default function DrawerLayout() {
         drawerLabelStyle: { fontSize: 20 },
       })}
     >
+      <Drawer.Screen name="Home" options={{ title: 'Home', drawerLabel: 'Home' }} />
+      <Drawer.Screen name="Forms/index" options={{ title: 'Forms', drawerLabel: 'Forms' }} />
+      <Drawer.Screen name="About" options={{ title: 'About', drawerLabel: 'About' }} />
     </Drawer>
   );
 }

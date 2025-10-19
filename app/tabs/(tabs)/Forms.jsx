@@ -1,49 +1,80 @@
-import EditScreenInfo from '@/components/EditScreenInfo';
+// Forms.jsx
+
+// ================================
+// React & React Native Imports
+// ================================
+import { useState, useEffect } from 'react';
+import { Alert, ScrollView, TouchableOpacity } from 'react-native';
+
+// ================================
+// Navigation and Theme Imports
+// ================================
+import { useRouter } from 'expo-router';
+import { useTheme } from '@react-navigation/native';
+
+// ================================
+// UI Component Imports
+// ================================
+import { Box } from '@/components/ui/box';
 import { Center } from '@/components/ui/center';
-import { Divider } from '@/components/ui/divider';
-import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { FlatList } from '@/components/ui/flat-list';
-import { Button, ButtonText } from '@/components/ui/button';
-import { useRouter } from 'expo-router';
-import { ScrollView, TouchableOpacity } from 'react-native';
-import { Box } from '@/components/ui/box';
-import PlusIcon from '@/assets/icons/Plus';
-import * as Haptics from 'expo-haptics';
-import { useTheme } from '@react-navigation/native';
+
+// ================================
+// Custom Component Imports
+// ================================
 import FormBase from '@/components/custom/FormForm';
 import FormItem from '@/components/custom/FormItem';
-import { Alert } from 'react-native';
 
+import PlusIcon from '@/assets/icons/Plus';
+
+// ================================
+// Haptics & API Imports
+// ================================
+import * as Haptics from 'expo-haptics';
 import { getForms, createForm, updateForm, deleteForm } from '@/restapi';
 
-import { useState, useEffect } from 'react';
 
+// Main Forms List Screen Component
 
+/**
+ * Displays a list of forms with options to create, edit, and delete.
+ * This screen utilises the REST API to fetch and manage form data.  
+ */
 export default function FormListScreen() {
   const router = useRouter();
+  const colours = useTheme().colors; // Theme colours
 
-  const colours = useTheme().colors; 
+  // ===================
+  // State Variables
+  // ===================
+  const [showForm, setShowForm] = useState(false); // Toggle form visibility
+  const [isEditing, setIsEditing] = useState(false); // Editing mode flag
+  const [editingFormId, setEditingFormId] = useState(null); // ID of form being edited
 
-  const [showForm, setShowForm] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingFormId, setEditingFormId] = useState(null);
-
+  // Form data for creating/editing
   const [formData, setFormData] = useState({ name: '', description: '' });
+  // List of forms from API
   const [forms, setForms] = useState([]);
 
+  // Loading and Error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
 
   // ===================
   // Use Effects
   // ===================
 
   useEffect(() => {
-    // Fetch forms when formData changes (after create/update)
+    // Fetch forms on component mount.
     fetchForms();
   }, []);
 
+  /**
+   * Fetches all forms from the server and updates state.
+   * Handles loading state and potential fetch errors.
+   */
   const fetchForms = async () => {
     try {
       setLoading(true);
@@ -64,7 +95,10 @@ export default function FormListScreen() {
   // Form Handlers
   // ===================
 
-
+  /**
+   * Handles creation or update of a form.
+   * Sends the form data to the backend and refreshes the list on success.
+   */
   const handleFormSubmit = async () => {
 
     // Prepare form data
@@ -72,8 +106,6 @@ export default function FormListScreen() {
       name: formData.name,
       description: formData.description,
     }
-
-    console.log('📤 Submitting form payload:', JSON.stringify(newForm, null, 2));
 
     try {
       let form;
@@ -85,6 +117,7 @@ export default function FormListScreen() {
         form = await createForm(newForm);
       }
 
+      // Provide haptic feedback
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
       // Reset form state
@@ -97,12 +130,15 @@ export default function FormListScreen() {
 
     } catch (err) {
       console.error(err);
-      console.error('testing')
       setError('Failed to save form.');
     }
   };
 
 
+  /**
+   * Populates the form fields for editing and toggles edit mode.
+   * @param {Object} item - The form item to edit.
+   */
   const handleEditForm = (item) => {
     setFormData({ name: item.name, description: item.description });
     setEditingFormId(item.id);
@@ -110,7 +146,10 @@ export default function FormListScreen() {
     setShowForm(true);
   }
 
-
+  /**
+   * Confirms deletion and removes the form if confirmed.
+   * @param {number} id - ID of the form to delete.
+   */
   const handleDeleteForm = async (id) => {
     Alert.alert(
       'Delete Form',
@@ -118,16 +157,16 @@ export default function FormListScreen() {
       [
         {
           text: 'Cancel',
-          style: 'cancel',
+          style: 'cancel', // React Native Cancel Style
         },
         {
           text: 'Delete',
-          style: 'destructive',
+          style: 'destructive', // IOS Delete Style
           onPress: async () => {
             try {
-              await deleteForm(id);
+              await deleteForm(id); // Delete form from API.
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              fetchForms(); // refresh list
+              fetchForms(); // Refresh list after deletion
             } catch (err) {
               console.error('Failed to delete form:', err);
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -138,9 +177,13 @@ export default function FormListScreen() {
     );
   };
 
+
+  // ===================
+  // UI Rendering
+  // ===================
   return (
     <Box className="flex-1">
-
+      {/* Show form if user is creating or editing */}
       {showForm ? (
         <FormBase 
           formData={formData}
@@ -151,7 +194,8 @@ export default function FormListScreen() {
         />
       ) : (
         <>
-          <Center className="">
+          {/* Add Form Button */}
+          <Center>
             <TouchableOpacity
               style={{ backgroundColor: colours.card }}
               className="p-4 m-4 w-[250px] justify-center gap-2 flex-row items-center rounded-xl"
@@ -163,10 +207,11 @@ export default function FormListScreen() {
               </Text>
             </TouchableOpacity>
 
+            {/* Divider */}
             <Box className="w-full h-px mb-4" style={{ backgroundColor: colours.card }} />
-
           </Center>
 
+          {/* Show message if no forms exist */}
           {forms.length === 0 ? (
             <Center className="flex-1 px-4 mt-8">
               <Text 
@@ -177,6 +222,7 @@ export default function FormListScreen() {
               </Text>
             </Center>
           ) : (
+            // Render form list
             <FlatList
               data={forms}
               renderItem={({ item }) => (
@@ -193,7 +239,6 @@ export default function FormListScreen() {
           )}
         </>
       )}
-        
     </Box>
   );
 }

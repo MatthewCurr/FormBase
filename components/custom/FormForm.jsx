@@ -17,10 +17,10 @@ export default function FormBase({ formData, setFormData, onSubmit, onCancel, is
 
   /**
    * Handle input change event and update form state.
-   * @param {Event} event - Input change event.
+   * @param {string} name - The field name (key in formData)
+   * @param {string} value - The new text value
    */
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const handleChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
 
@@ -56,8 +56,8 @@ export default function FormBase({ formData, setFormData, onSubmit, onCancel, is
       <Box className="mb-4">
         <Text className="text-sm mb-1 font-semibold dark:text-white">Form Title</Text>
         <TextInput
-          value={formData.title}
-          onChangeText={handleChange}
+          value={formData.name}
+          onChangeText={(text) => handleChange('name', text)}
           placeholder="Enter Title"
           placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
           className="border border-gray-400 rounded-lg p-3 bg-white text-black"
@@ -68,7 +68,7 @@ export default function FormBase({ formData, setFormData, onSubmit, onCancel, is
         <Text className="text-sm mb-1 font-semibold dark:text-white">Description</Text>
         <TextInput
           value={formData.description}
-          onChangeText={handleChange}
+          onChangeText={(text) => handleChange('description', text)}
           placeholder="Enter Description"
           placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
           className="border border-gray-400 rounded-lg p-3 bg-white text-black"

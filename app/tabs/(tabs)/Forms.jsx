@@ -13,6 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { useTheme } from '@react-navigation/native';
 import FormBase from '@/components/custom/FormForm';
 import FormItem from '@/components/custom/FormItem';
+import { Alert } from 'react-native';
 
 import { getForms, createForm, updateForm, deleteForm } from '@/restapi';
 
@@ -111,13 +112,30 @@ export default function FormListScreen() {
 
 
   const handleDeleteForm = async (id) => {
-    try {
-      await deleteForm(id);
-      fetchForms();
-    } catch (err) {
-      console.error('Error deleting form:', err);
-      setError('Failed to delete form.');
-    }
+    Alert.alert(
+      'Delete Form',
+      'Are you sure you want to delete this form?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteForm(id);
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              fetchForms(); // refresh list
+            } catch (err) {
+              console.error('Failed to delete form:', err);
+              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (

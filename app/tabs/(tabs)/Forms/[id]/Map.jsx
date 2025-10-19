@@ -1,14 +1,19 @@
 
+import { useGlobalSearchParams } from 'expo-router';
+import { Text, View } from 'react-native';
+
 // ================================
 // UI Component Imports
 // ================================
 import { Box } from '@/components/ui/box';
 
-export default function FormEdit() {
+export default function FormMap() {
+  
+  const { id } = useGlobalSearchParams();
 
   return (
-    <Box className="p-10 items-start">
-      <Text>Edit Page</Text>
+    <Box style={{ padding: 20 }}>
+      <Text>Map Page for form {id}</Text>
     </Box>
   );
 }

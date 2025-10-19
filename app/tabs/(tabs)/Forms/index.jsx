@@ -178,11 +178,13 @@ export default function FormListScreen() {
   };
 
   /**
-   * Handles viewing a form's details.
+   * Handles viewing a form's fields and records.
    * @param {*} item - The form item to view.
    */
   const handleViewForm = (item) => {
-    // Logic to view the form details
+    const path = `tabs/Forms/${item.id}/Edit`
+    console.log(path)
+    router.push(path); // Navigate to edit page.
   };
 
 

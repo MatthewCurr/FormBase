@@ -3,7 +3,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 import { Drawer } from 'expo-router/drawer';
 import { DarkTheme, useNavigation } from '@react-navigation/native';
-import { Tabs } from 'expo-router';
+import { Tabs, useLocalSearchParams } from 'expo-router';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 
@@ -12,6 +12,7 @@ function DrawerIcon({ name, color }) {
 }
 
 export default function DrawerLayout() {
+  const id = useLocalSearchParams();
 
   const colorScheme = useColorScheme(); // 'light' or 'dark'
   const isDark = colorScheme === 'dark';
@@ -23,6 +24,9 @@ export default function DrawerLayout() {
           route.name === 'Home' // Hide Header on Home Screen
             ? useClientOnlyValue(false, false) 
             : useClientOnlyValue(false, true),
+        drawerItemStyle: {
+          display: route.name.includes('[') ? 'none' : 'flex',
+        },
         drawerActiveTintColor: isDark ? '#3EB489' : '#059669',
         drawerInactiveTintColor: isDark ? '#AAAAAA' : '#555555',
         drawerLabelStyle: { fontSize: 20 },
@@ -31,6 +35,7 @@ export default function DrawerLayout() {
       <Drawer.Screen name="Home" options={{ title: 'Home', drawerLabel: 'Home' }} />
       <Drawer.Screen name="Forms/index" options={{ title: 'Forms', drawerLabel: 'Forms' }} />
       <Drawer.Screen name="About" options={{ title: 'About', drawerLabel: 'About' }} />
+      <Drawer.Screen name="Forms/[id]" options={{ title: `Forms` }} />
     </Drawer>
   );
 }

@@ -10,6 +10,7 @@ export const LightThemeCustom = {
     text: '#065F46',  
     border: '#C8E6C9',
     notification: '#3EB489',
+    view: '#3B82F6',
   },
 };
 
@@ -24,5 +25,6 @@ export const DarkThemeCustom = {
     text: '#A7F3D0', 
     border: '#222222',
     notification: '#3EB489',
+    view: '#60A5FA',
   },
 };

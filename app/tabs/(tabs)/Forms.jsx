@@ -12,6 +12,7 @@ import PlusIcon from '@/assets/icons/Plus';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@react-navigation/native';
 import FormBase from '@/components/custom/FormForm';
+import FormItem from '@/components/custom/FormItem';
 
 import { getForms, createForm, updateForm, deleteForm } from '@/restapi';
 
@@ -61,6 +62,8 @@ export default function FormListScreen() {
   // ===================
   // Form Handlers
   // ===================
+
+
   const handleFormSubmit = async () => {
 
     // Prepare form data
@@ -99,46 +102,23 @@ export default function FormListScreen() {
   };
 
 
-  const renderFormItem = ({ item }) => (
-    <Box 
-      className="mx-4 mb-4 p-4 rounded-xl"
-      style={{ backgroundColor: colours.card }}
-    >
-      <Text 
-        className="text-lg font-bold mb-2"
-        style={{ color: colours.text }}
-      >
-        {item.name}
-      </Text>
-      <Text 
-        className="text-sm mb-4"
-        style={{ color: colours.text, opacity: 0.7 }}
-      >
-        {item.description}
-      </Text>
-      
-      <Box className="flex-row gap-2">
-        <TouchableOpacity
-          className="flex-1 p-3 rounded-lg items-center"
-          style={{ backgroundColor: colours.primary }}
-          onPress={() => handleEditForm(item)}
-        >
-          <Text style={{ color: '#fff' }} className="font-semibold">
-            Edit
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-          className="flex-1 p-3 rounded-lg items-center bg-red-500"
-          onPress={() => handleDeleteForm(item.id)}
-        >
-          <Text style={{ color: '#fff' }} className="font-semibold">
-            Delete
-          </Text>
-        </TouchableOpacity>
-      </Box>
-    </Box>
-  );
+  const handleEditForm = (item) => {
+    setFormData({ name: item.name, description: item.description });
+    setEditingFormId(item.id);
+    setIsEditing(true);
+    setShowForm(true);
+  }
+
+
+  const handleDeleteForm = async (id) => {
+    try {
+      await deleteForm(id);
+      fetchForms();
+    } catch (err) {
+      console.error('Error deleting form:', err);
+      setError('Failed to delete form.');
+    }
+  };
 
   return (
     <Box className="flex-1">
@@ -181,7 +161,14 @@ export default function FormListScreen() {
           ) : (
             <FlatList
               data={forms}
-              renderItem={renderFormItem}
+              renderItem={({ item }) => (
+                <FormItem
+                  item={item}
+                  onEdit={handleEditForm}
+                  onDelete={handleDeleteForm}
+                  colours={colours}
+                />
+              )}
               keyExtractor={(item) => item.id.toString()}
               contentContainerStyle={{ paddingBottom: 100 }}
             />

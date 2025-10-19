@@ -12,10 +12,11 @@ import React from 'react';
  * @param {Object} props
  * @param {Object} props.item - The form data (id, name, description).
  * @param {Function} props.onEdit - Called when the Edit button is pressed.
+ * @param {Function} props.onView - Called when the View button is pressed.
  * @param {Function} props.onDelete - Called when the Delete button is pressed.
  * @param {Object} props.colours - Theme colours for background/text.
  */
-export default function FormItem({ item, onEdit, onDelete, colours }) {
+export default function FormItem({ item, onEdit, onView, onDelete, colours }) {
   return (
     <Box
       className="mx-4 mb-4 p-4 rounded-xl"

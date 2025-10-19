@@ -177,6 +177,14 @@ export default function FormListScreen() {
     );
   };
 
+  /**
+   * Handles viewing a form's details.
+   * @param {*} item - The form item to view.
+   */
+  const handleViewForm = (item) => {
+    // Logic to view the form details
+  };
+
 
   // ===================
   // UI Rendering
@@ -229,6 +237,7 @@ export default function FormListScreen() {
                 <FormItem
                   item={item}
                   onEdit={handleEditForm}
+                  onView={handleViewForm}
                   onDelete={handleDeleteForm}
                   colours={colours}
                 />

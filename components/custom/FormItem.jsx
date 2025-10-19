@@ -1,7 +1,7 @@
 
 // components/custom/FormItem.jsx
 
-import { TouchableOpacity } from 'react-native';
+import HapticButton from '@/components/custom/HapticButton';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
 import React from 'react';
@@ -35,7 +35,7 @@ export default function FormItem({ item, onEdit, onDelete, colours }) {
       </Text>
       
       <Box className="flex-row gap-2">
-        <TouchableOpacity
+        <HapticButton
           className="flex-1 p-3 rounded-lg items-center"
           style={{ backgroundColor: colours.primary }}
           onPress={() => onEdit(item)}
@@ -43,16 +43,17 @@ export default function FormItem({ item, onEdit, onDelete, colours }) {
           <Text style={{ color: '#fff' }} className="font-semibold">
             Edit
           </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity
+        </HapticButton>
+
+        <HapticButton
           className="flex-1 p-3 rounded-lg items-center bg-red-500"
           onPress={() => onDelete(item.id)}
+          haptic="heavy"
         >
           <Text style={{ color: '#fff' }} className="font-semibold">
             Delete
           </Text>
-        </TouchableOpacity>
+        </HapticButton>
       </Box>
     </Box>
   );

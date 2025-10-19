@@ -35,6 +35,18 @@ export default function FormItem({ item, onEdit, onDelete, colours }) {
       </Text>
       
       <Box className="flex-row gap-2">
+        {/* View Button */}
+        <HapticButton
+          className="flex-1 p-3 rounded-lg items-center"
+          style={{ backgroundColor: colours.view }}
+          onPress={() => onView(item)}
+        >
+          <Text style={{ color: '#fff' }} className="font-semibold">
+            View
+          </Text>
+        </HapticButton>
+
+        {/* Edit Button */}
         <HapticButton
           className="flex-1 p-3 rounded-lg items-center"
           style={{ backgroundColor: colours.primary }}
@@ -45,6 +57,7 @@ export default function FormItem({ item, onEdit, onDelete, colours }) {
           </Text>
         </HapticButton>
 
+        {/* Delete Button */}
         <HapticButton
           className="flex-1 p-3 rounded-lg items-center bg-red-500"
           onPress={() => onDelete(item.id)}

@@ -44,12 +44,14 @@ import * as Haptics from 'expo-haptics';
  * Possible Values for fields:
  * @param {string} props.fields[].name - The key in formData corresponding to this field
  * @param {string} props.fields[].label - Label text displayed above the input
- * @param {string} [props.fields[].placeholder] - Placeholder text inside the input
- * @param {'text'|'number'} [props.fields[].type='text'] - Input type for keyboard
- * @param {boolean} [props.fields[].multiline=false] - Whether the input supports multiple lines
- * @param {boolean} [props.fields[].disabled=false] - Whether the input is read-only/disabled
- * @param {Array<string>} [props.fields[].options] - For dropdown/select fields: the possible options
- * @param {Function} [props.fields[].required] - If field is required on form
+ * @param {string} props.fields[].placeholder - Placeholder text inside the input
+ * @param {'text'|'multiline'|'dropdown'|'location'|'image'} [props.fields[].type='text'] - Field Type
+ * @param {boolean} props.fields[].multiline=false - Whether the input supports multiple lines
+ * @param {boolean} props.fields[].disabled=false - Whether the input is read-only/disabled
+ * @param {Array<string>} props.fields[].options - For dropdown/select fields: the possible options
+ * @param {Function} props.fields[].required - If field is required on form
+ * @param {boolean} prop.fields[].is_num - Boolean for if field only accepts numeric values
+ * @param {Array} props.fields[].options - If type = dropdown, array that stores the options for the dropdown
  *
  * Example of fields:
  * [
@@ -144,7 +146,7 @@ export default function FormBase({
             placeholder={field.placeholder}
             placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
             multiline={field.multiline || false}
-            keyboardType={field.type === 'number' ? 'numeric' : 'default'}
+            keyboardType={field.is_num === true ? 'numeric' : 'default'}
             className="border border-gray-400 rounded-lg p-3 bg-white text-black"
           />
         </Box>

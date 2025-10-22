@@ -38,7 +38,7 @@ export default function AppLayout() {
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
-      {pathname === '/tabs/Forms' ? (
+      {(pathname === '/tabs/Forms' || pathname.includes('/tabs/Forms/')) ? (
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>

@@ -106,7 +106,6 @@ export default function FormBase({
 
   return (
     <Box className="flex-1 m-8 p-4">
-
       {/* Back Button and Form Title */}
       <Center className="mb-4 w-full">
         <TouchableOpacity

@@ -12,6 +12,11 @@ export default function EditForm() {
   const [formData, setFormData] = useState({ name: '', description: '' });
   const [loading, setLoading] = useState(true);
 
+  const formFields = [
+    { name: 'name', label: 'Form Name', placeholder: 'Enter Label Name', required: true },
+    { name: 'description', label: 'Form Description', placeholder: 'Enter Description', required: true },
+  ];
+
   // ===================
   // Use Effects
   // ===================
@@ -77,6 +82,7 @@ export default function EditForm() {
       onSubmit={handleSubmit}
       onCancel={() => router.push('/tabs/Forms')}
       isEditing={true} // Editing Form with ID
+      fields={formFields}
     />
   );
 }

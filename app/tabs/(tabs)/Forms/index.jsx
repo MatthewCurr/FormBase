@@ -146,6 +146,16 @@ export default function FormListScreen() {
     setShowForm(true);
   }
 
+
+  /**
+   * Brings up empty form to enter. 
+   */
+  const handleAddForm = () => {
+    setFormData({ name: '', description: '' }); // Clear Data (i.e. from saved edit data)
+    setIsEditing(false);
+    setShowForm(true);
+  }
+
   /**
    * Confirms deletion and removes the form if confirmed.
    * @param {number} id - ID of the form to delete.
@@ -153,7 +163,7 @@ export default function FormListScreen() {
   const handleDeleteForm = async (id) => {
     Alert.alert(
       'Delete Form',
-      'Are you sure you want to delete this form?',
+      'Are you sure you want to delete this form?\n\n-Doing so will delete all fields and records associated with the form.',
       [
         {
           text: 'Cancel',
@@ -182,7 +192,7 @@ export default function FormListScreen() {
    * @param {*} item - The form item to view.
    */
   const handleViewForm = (item) => {
-    const path = `tabs/Forms/${item.id}/Edit`
+    const path = `tabs/Forms/${item.id}/Add`
     console.log(path)
     router.push(path); // Navigate to edit page.
   };
@@ -209,7 +219,7 @@ export default function FormListScreen() {
             <TouchableOpacity
               style={{ backgroundColor: colours.card }}
               className="p-4 m-4 w-[250px] justify-center gap-2 flex-row items-center rounded-xl"
-              onPress={() => setShowForm(true)}
+              onPress={() => handleAddForm()}
             >
               <PlusIcon size={16} color={colours.text} />
               <Text className="mr-2">   

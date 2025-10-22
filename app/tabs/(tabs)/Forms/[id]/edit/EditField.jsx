@@ -18,10 +18,6 @@ export default function AddForm() {
   const buttons = ["Add Field"]
 
   const handleSubmit = async () => {
-    if (!formData.name?.trim() || !formData.description?.trim()) {
-      alert('Please fill in all required fields.');
-      return;
-    }
 
     try {
       await createForm(formData);

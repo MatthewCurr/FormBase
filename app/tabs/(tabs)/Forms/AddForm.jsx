@@ -16,11 +16,6 @@ export default function AddForm() {
   ];
 
   const handleSubmit = async () => {
-    if (!formData.name?.trim() || !formData.description?.trim()) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-
     try {
       await createForm(formData);
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

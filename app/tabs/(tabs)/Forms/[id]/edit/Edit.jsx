@@ -22,6 +22,7 @@ export default function EditForm() {
   // ===================
 
   useEffect(() => {
+    if (!id) return; // Wait until id is available
 
     /**
      * Fetches editing form from the server and updates state.

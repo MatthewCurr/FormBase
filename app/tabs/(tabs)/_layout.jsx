@@ -35,7 +35,8 @@ export default function DrawerLayout() {
       <Drawer.Screen name="Home" options={{ title: 'Home', drawerLabel: 'Home' }} />
       <Drawer.Screen name="Forms/index" options={{ title: 'Forms', drawerLabel: 'Forms' }} />
       <Drawer.Screen name="About" options={{ title: 'About', drawerLabel: 'About' }} />
-      <Drawer.Screen name="Forms/[id]" options={{ title: `Forms` }} />
+      <Drawer.Screen name="Forms/[id]/view" options={{ title: `Forms` }} />
+      <Drawer.Screen name="Forms/[id]/edit" options={{ title: `Forms` }} />
     </Drawer>
   );
 }

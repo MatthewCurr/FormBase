@@ -6,7 +6,6 @@ import { useTheme } from '@react-navigation/native';
 
 export default function EditTabsLayout() {
   const router = useRouter();
-
   const colours = useTheme().colors; 
 
   return (
@@ -24,7 +23,7 @@ export default function EditTabsLayout() {
       }}
     >
       <Tabs.Screen name="Edit" options={{ title: 'Edit Form'}}/>
-      <Tabs.Screen name="EditField" options={{ title: 'Edit Field'}}/>
+      <Tabs.Screen name="EditField" options={{ title: 'Add Fields' }} />
     </Tabs>
   );
 }

@@ -4,7 +4,7 @@
 // React & React Native Imports
 // ================================
 import { useState, useEffect } from 'react';
-import { Alert, ScrollView, TouchableOpacity } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 
 // ================================
 // Navigation and Theme Imports
@@ -23,7 +23,6 @@ import { FlatList } from '@/components/ui/flat-list';
 // ================================
 // Custom Component Imports
 // ================================
-import FormBase from '@/components/custom/FormForm';
 import FormItem from '@/components/custom/FormItem';
 
 import PlusIcon from '@/assets/icons/Plus';
@@ -32,7 +31,7 @@ import PlusIcon from '@/assets/icons/Plus';
 // Haptics & API Imports
 // ================================
 import * as Haptics from 'expo-haptics';
-import { getForms, createForm, updateForm, deleteForm } from '@/restapi';
+import { getForms, deleteForm } from '@/restapi';
 
 
 // Main Forms List Screen Component
@@ -48,12 +47,7 @@ export default function FormListScreen() {
   // ===================
   // State Variables
   // ===================
-  const [showForm, setShowForm] = useState(false); // Toggle form visibility
-  const [isEditing, setIsEditing] = useState(false); // Editing mode flag
-  const [editingFormId, setEditingFormId] = useState(null); // ID of form being edited
 
-  // Form data for creating/editing
-  const [formData, setFormData] = useState({ name: '', description: '' });
   // List of forms from API
   const [forms, setForms] = useState([]);
 
@@ -96,64 +90,18 @@ export default function FormListScreen() {
   // ===================
 
   /**
-   * Handles creation or update of a form.
-   * Sends the form data to the backend and refreshes the list on success.
-   */
-  const handleFormSubmit = async () => {
-
-    // Prepare form data
-    const newForm = {
-      name: formData.name,
-      description: formData.description,
-    }
-
-    try {
-      let form;
-      if (isEditing) {
-        // Update Existing Form
-        form = await updateForm(newForm, editingFormId);
-      } else {
-        // Create New Form
-        form = await createForm(newForm);
-      }
-
-      // Provide haptic feedback
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-      // Reset form state
-      setFormData({ name: '', description: '' });
-      setShowForm(false);
-      setIsEditing(false);
-
-      // Refresh forms list
-      fetchForms();
-
-    } catch (err) {
-      console.error(err);
-      setError('Failed to save form.');
-    }
-  };
-
-
-  /**
    * Populates the form fields for editing and toggles edit mode.
    * @param {Object} item - The form item to edit.
    */
   const handleEditForm = (item) => {
-    setFormData({ name: item.name, description: item.description });
-    setEditingFormId(item.id);
-    setIsEditing(true);
-    setShowForm(true);
+    router.push(`tabs/Forms/${item.id}/edit`)
   }
-
 
   /**
    * Brings up empty form to enter. 
    */
   const handleAddForm = () => {
-    setFormData({ name: '', description: '' }); // Clear Data (i.e. from saved edit data)
-    setIsEditing(false);
-    setShowForm(true);
+    router.push(`tabs/Forms/AddForm`)
   }
 
   /**
@@ -192,7 +140,7 @@ export default function FormListScreen() {
    * @param {*} item - The form item to view.
    */
   const handleViewForm = (item) => {
-    const path = `tabs/Forms/${item.id}/Add`
+    const path = `tabs/Forms/${item.id}/view/Add`
     console.log(path)
     router.push(path); // Navigate to edit page.
   };
@@ -203,62 +151,49 @@ export default function FormListScreen() {
   // ===================
   return (
     <Box className="flex-1">
-      {/* Show form if user is creating or editing */}
-      {showForm ? (
-        <FormBase 
-          formData={formData}
-          setFormData={setFormData}
-          onSubmit={handleFormSubmit}
-          onCancel={() => setShowForm(false)}
-          isEditing={isEditing}
-        />
+      {/* Add Form Button */}
+      <Center>
+        <TouchableOpacity
+          style={{ backgroundColor: colours.card }}
+          className="p-4 m-4 w-[250px] justify-center gap-2 flex-row items-center rounded-xl"
+          onPress={() => handleAddForm()}
+        >
+          <PlusIcon size={16} color={colours.text} />
+          <Text className="mr-2">   
+            Add New Form
+          </Text>
+        </TouchableOpacity>
+
+        {/* Divider */}
+        <Box className="w-full h-px mb-4" style={{ backgroundColor: colours.card }} />
+      </Center>
+
+      {/* Show message if no forms exist */}
+      {forms.length === 0 ? (
+        <Center className="flex-1 px-4 mt-8">
+          <Text 
+            className="text-lg text-center"
+            style={{ color: colours.text, opacity: 0.6 }}
+          >
+            No forms yet. Create your first form!
+          </Text>
+        </Center>
       ) : (
-        <>
-          {/* Add Form Button */}
-          <Center>
-            <TouchableOpacity
-              style={{ backgroundColor: colours.card }}
-              className="p-4 m-4 w-[250px] justify-center gap-2 flex-row items-center rounded-xl"
-              onPress={() => handleAddForm()}
-            >
-              <PlusIcon size={16} color={colours.text} />
-              <Text className="mr-2">   
-                Add New Form
-              </Text>
-            </TouchableOpacity>
-
-            {/* Divider */}
-            <Box className="w-full h-px mb-4" style={{ backgroundColor: colours.card }} />
-          </Center>
-
-          {/* Show message if no forms exist */}
-          {forms.length === 0 ? (
-            <Center className="flex-1 px-4 mt-8">
-              <Text 
-                className="text-lg text-center"
-                style={{ color: colours.text, opacity: 0.6 }}
-              >
-                No forms yet. Create your first form!
-              </Text>
-            </Center>
-          ) : (
-            // Render form list
-            <FlatList
-              data={forms}
-              renderItem={({ item }) => (
-                <FormItem
-                  item={item}
-                  onEdit={handleEditForm}
-                  onView={handleViewForm}
-                  onDelete={handleDeleteForm}
-                  colours={colours}
-                />
-              )}
-              keyExtractor={(item) => item.id.toString()}
-              contentContainerStyle={{ paddingBottom: 100 }}
+        // Render form list
+        <FlatList
+          data={forms}
+          renderItem={({ item }) => (
+            <FormItem
+              item={item}
+              onEdit={handleEditForm}
+              onView={handleViewForm}
+              onDelete={handleDeleteForm}
+              colours={colours}
             />
           )}
-        </>
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ paddingBottom: 100 }}
+        />
       )}
     </Box>
   );

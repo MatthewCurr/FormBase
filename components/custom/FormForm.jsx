@@ -41,9 +41,10 @@ import * as Haptics from 'expo-haptics';
  * @param {Function} props.onSubmit - Called when the Submit button is pressed.
  * @param {Function} props.onCancel - Called when the Cancel button is pressed.
  * @param {boolean} props.isEditing - Whether the form is in editing mode.
- * @param {Array} props.fields - Array of objects that describe the fields,
+ * @param {Array} props.fields - Array of objects that describe the fields.
  * @param {Array} props.title - title to display when adding and editing. ['Add Message', 'Edit Message']
  * @param {Array} props.button - message to display on button when adding and editing.
+ * @param {ReactElement} children - Child Elements to be inserted below field options.
  *                               
  * Possible Values for fields:
  * @param {string} props.fields[].name - The key in formData corresponding to this field
@@ -71,7 +72,8 @@ export default function FormBase({
   isEditing = false,
   fields = [],
   title = ["Create New Form", "Edit Form"],
-  button = ["Create Form", "Update Form"]
+  button = ["Create Form", "Update Form"],
+  children
 }) {
 
   const colorScheme = useColorScheme(); // 'dark' or 'light'
@@ -140,6 +142,7 @@ export default function FormBase({
         </Heading>
       </Center>
 
+      {/* List All Fields passed into component */}
       {fields.map((field) => 
         field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
           <Box key={field.name} className="mb-4">
@@ -148,8 +151,8 @@ export default function FormBase({
               open={openDropdown === field.name}
               value={formData[field.name]}
               items={field.options.map((option) => ({
-                label: option.label,
-                value: option.value,
+                label: option,
+                value: option,
               }))}
               setOpen={(isOpen) =>
                 setOpenDropdown(isOpen ? field.name : null)
@@ -186,7 +189,11 @@ export default function FormBase({
         )
       )}
 
-      {/* List All Fields passed into component */}
+      {children && (
+        <Box className="mb-4">
+          {children}
+        </Box>
+      )}
       
 
       <Divider className="mt-4 mb-8" />

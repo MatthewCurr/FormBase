@@ -2,7 +2,11 @@
 // React & React Native Imports
 // ================================
 
-import {  Alert, View, Text, TextInput, TouchableOpacity, useColorScheme } from 'react-native';
+import {  Alert, View, Text, TextInput,
+          TouchableOpacity, useColorScheme } from 'react-native';
+
+import DropDownPicker from 'react-native-dropdown-picker'
+import { useState } from 'react'
 
 // ================================
 // Navigation and Theme Imports
@@ -70,10 +74,10 @@ export default function FormBase({
   button = ["Create Form", "Update Form"]
 }) {
 
-  console.log(fields)
-
   const colorScheme = useColorScheme(); // 'dark' or 'light'
   const colours = useTheme().colors;
+
+  const [openDropdown, setOpenDropdown] = useState(null);
 
   /**
    * Handle input change event and update form state.
@@ -136,21 +140,54 @@ export default function FormBase({
         </Heading>
       </Center>
 
+      {fields.map((field) => 
+        field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
+          <Box key={field.name} className="mb-4">
+            <Text className="text-sm mb-1 font-semibold dark:text-white">{field.label}</Text>
+            <DropDownPicker
+              open={openDropdown === field.name}
+              value={formData[field.name]}
+              items={field.options.map((option) => ({
+                label: option.label,
+                value: option.value,
+              }))}
+              setOpen={(isOpen) =>
+                setOpenDropdown(isOpen ? field.name : null)
+              }
+              setValue={(callback) => {
+                const value = callback(formData[field.name]);
+                handleChange(field.name, value);
+              }}
+              placeholder={field.placeholder || 'Select an option'}
+              style={{
+                borderColor: '#9CA3AF',
+                backgroundColor: '#fff',
+              }}
+              dropDownContainerStyle={{
+                borderColor: '#9CA3AF',
+                backgroundColor: '#fff',
+              }}
+              
+            />
+          </Box>
+        ) : ( // Else if Text or Multiline render TextInput
+          <Box key={field.name} className="mb-4">
+            <Text className="text-sm mb-1 font-semibold dark:text-white">{field.label}</Text>
+            <TextInput
+              value={formData[field.name]}
+              onChangeText={(value) => handleChange(field.name, value)}
+              placeholder={field.placeholder}
+              placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
+              multiline={field.multiline || false}
+              keyboardType={field.is_num === true ? 'numeric' : 'default'}
+              className="border border-gray-400 rounded-lg p-3 bg-white text-black"
+            />
+          </Box>
+        )
+      )}
+
       {/* List All Fields passed into component */}
-      {fields.map((field) => (
-        <Box key={field.name} className="mb-4">
-          <Text className="text-sm mb-1 font-semibold dark:text-white">{field.label}</Text>
-          <TextInput
-            value={formData[field.name]}
-            onChangeText={(value) => handleChange(field.name, value)}
-            placeholder={field.placeholder}
-            placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
-            multiline={field.multiline || false}
-            keyboardType={field.is_num === true ? 'numeric' : 'default'}
-            className="border border-gray-400 rounded-lg p-3 bg-white text-black"
-          />
-        </Box>
-      ))}
+      
 
       <Divider className="mt-4 mb-8" />
 

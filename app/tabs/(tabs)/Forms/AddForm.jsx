@@ -10,6 +10,11 @@ export default function AddForm() {
 
   const [formData, setFormData] = useState({ name: '', description: '' });
 
+  const formFields = [
+    { name: 'name', label: 'Form Name', placeholder: 'Enter Label Name', required: true },
+    { name: 'description', label: 'Form Description', placeholder: 'Enter Description', required: true },
+  ];
+
   const handleSubmit = async () => {
     if (!formData.name?.trim() || !formData.description?.trim()) {
       alert('Please fill in all required fields.');
@@ -33,6 +38,7 @@ export default function AddForm() {
       onSubmit={handleSubmit}
       onCancel={() => router.push('/tabs/Forms')}
       isEditing={false}
+      fields={formFields}
     />
   );
 }

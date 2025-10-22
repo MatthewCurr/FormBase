@@ -82,7 +82,11 @@ export default function FormBase({ formData, setFormData, onSubmit, onCancel, is
       {/* Action Buttons */}
       <View className="flex-row gap-4 mb-6">
         <TouchableOpacity
-          onPress={onSubmit}
+          onPress={() =>
+            !formData.name?.trim() || !formData.description?.trim()
+              ? alert('Please fill in all required fields.')
+              : onSubmit()
+          }
           style={{ backgroundColor: colours.card }}
           className="flex-1 flex-row items-center justify-center p-4 rounded-lg"
         >

@@ -7,7 +7,7 @@ import { createForm } from '@/restapi';
 
 import { Box } from '@/components/ui/box';
 
-import { Text, TextInput } from 'react-native';
+import { Text, TextInput, Alert } from 'react-native';
 
 export default function AddForm() {
   const router = useRouter();
@@ -30,13 +30,19 @@ export default function AddForm() {
 
   const handleSubmit = async () => {
 
+    // First, check if dropdown options are required
+    if (formData.fieldtype === 'DropDown' && !formData.options?.trim()) {
+      Alert.alert('Missing Required Fields', `Please enter dropdown options before submitting.`)
+      return;
+    }
+
     try {
       await createForm(formData);
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       router.push('/tabs/Forms'); // go back to forms list
     } catch (err) {
       console.error(err);
-      alert('Failed to save form.');
+      Alert.alert("Submission Error",`Failed to save form\n${err}`);
     }
   };
 

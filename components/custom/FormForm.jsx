@@ -2,7 +2,7 @@
 // React & React Native Imports
 // ================================
 
-import {  Alert, View, Text, TextInput,
+import {  Alert, View, Text, TextInput, FlatList,
           TouchableOpacity, useColorScheme } from 'react-native';
 
 import DropDownPicker from 'react-native-dropdown-picker'
@@ -53,7 +53,6 @@ import * as Haptics from 'expo-haptics';
  * @param {'text'|'multiline'|'dropdown'|'location'|'image'} [props.fields[].type='text'] - Field Type
  * @param {boolean} props.fields[].multiline=false - Whether the input supports multiple lines
  * @param {boolean} props.fields[].disabled=false - Whether the input is read-only/disabled
- * @param {Array<string>} props.fields[].options - For dropdown/select fields: the possible options
  * @param {Function} props.fields[].required - If field is required on form
  * @param {boolean} prop.fields[].is_num - Boolean for if field only accepts numeric values
  * @param {Array} props.fields[].options - If type = dropdown, array that stores the options for the dropdown
@@ -61,7 +60,7 @@ import * as Haptics from 'expo-haptics';
  * Example of fields:
  * [
  *   { name: 'name', label: 'Name', placeholder: 'Enter your name', type: 'text' },
- *   { name: 'age', label: 'Age', placeholder: 'Enter age', type: 'number' },
+ *   { name: 'age', label: 'Age', placeholder: 'Enter age', type: 'text', is_num: true },
  * ]
  */
 export default function FormBase({ 
@@ -112,10 +111,60 @@ export default function FormBase({
     onSubmit();
   }
 
+  const renderField = ({ item: field}) => (
+    <Box key={field.name} className="">
+      {field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
+        <Box key={field.name} className="mb-4">
+          <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
+          <DropDownPicker
+            open={openDropdown === field.name}
+            value={formData[field.name]}
+            items={field.options.map((option) => ({
+              label: option,
+              value: option,
+            }))}
+            setOpen={(isOpen) =>
+              setOpenDropdown(isOpen ? field.name : null)
+            }
+            setValue={(callback) => {
+              const value = callback(formData[field.name]);
+              handleChange(field.name, value);
+            }}
+            placeholder={field.placeholder || 'Select an option'}
+            style={{
+              borderColor: '#9CA3AF',
+              backgroundColor: '#fff',
+            }}
+            dropDownContainerStyle={{
+              borderColor: '#9CA3AF',
+              backgroundColor: '#fff',
+            }}
+            
+          />
+        </Box>
+      ) : ( // Else if Text or Multiline render TextInput
+        <Box key={field.name} className="mb-4">
+          <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
+          <TextInput
+            value={formData[field.name]}
+            onChangeText={(value) => handleChange(field.name, value)}
+            placeholder={field.placeholder}
+            placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
+            multiline={field.multiline || false}
+            keyboardType={field.is_num === true ? 'numeric' : 'default'}
+            className="border border-gray-400 rounded-lg p-3 bg-white text-black"
+          />
+        </Box>
+      )}
+    </Box>
+  )
+
+
+  /* Main Content */
   return (
-    <Box className="flex-1 m-8 p-4">
+    <Box className="flex-1 m-6">
       {/* Back Button and Form Title */}
-      <Center className="mb-4 w-full">
+      <Center className="w-full px-4 py-2">
         <TouchableOpacity
           style={{ backgroundColor: colours.card }}
           className="self-start mb-4 p-2 rounded-lg"
@@ -137,90 +186,58 @@ export default function FormBase({
           </Box>
         </TouchableOpacity>
 
-        <Heading className="text-xl mb-6">
+        <Heading className="text-xl mb-2">
           {isEditing ? title[1] : title[0]}
         </Heading>
       </Center>
 
       {/* List All Fields passed into component */}
-      {fields.map((field) => 
-        field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
-          <Box key={field.name} className="mb-4">
-            <Text className="text-sm mb-1 font-semibold dark:text-white">{field.label}</Text>
-            <DropDownPicker
-              open={openDropdown === field.name}
-              value={formData[field.name]}
-              items={field.options.map((option) => ({
-                label: option,
-                value: option,
-              }))}
-              setOpen={(isOpen) =>
-                setOpenDropdown(isOpen ? field.name : null)
-              }
-              setValue={(callback) => {
-                const value = callback(formData[field.name]);
-                handleChange(field.name, value);
-              }}
-              placeholder={field.placeholder || 'Select an option'}
-              style={{
-                borderColor: '#9CA3AF',
-                backgroundColor: '#fff',
-              }}
-              dropDownContainerStyle={{
-                borderColor: '#9CA3AF',
-                backgroundColor: '#fff',
-              }}
-              
-            />
-          </Box>
-        ) : ( // Else if Text or Multiline render TextInput
-          <Box key={field.name} className="mb-4">
-            <Text className="text-sm mb-1 font-semibold dark:text-white">{field.label}</Text>
-            <TextInput
-              value={formData[field.name]}
-              onChangeText={(value) => handleChange(field.name, value)}
-              placeholder={field.placeholder}
-              placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
-              multiline={field.multiline || false}
-              keyboardType={field.is_num === true ? 'numeric' : 'default'}
-              className="border border-gray-400 rounded-lg p-3 bg-white text-black"
-            />
-          </Box>
-        )
-      )}
+      <FlatList
+        data={fields}
+        keyExtractor={(item) => item.name}
+        renderItem={renderField}
+        ListFooterComponent={
+          <>
+            {/* Child Elements passed into Component */}
+            {children && (
+            <Box>
+              {children}
+            </Box>
+            )}
 
-      {children && (
-        <Box className="mb-4">
-          {children}
-        </Box>
-      )}
+            <Divider className="mt-4 mb-8" />
+
+            {/* Action Buttons */}
+            <View className="flex-row gap-4 mb-6">
+              <TouchableOpacity
+                onPress={() => handlePressSubmit()}
+                style={{ backgroundColor: colours.card }}
+                className="flex-1 flex-row items-center justify-center p-4 rounded-lg"
+              >
+                <PlusIcon size={20} color={colours.text} />
+                <Text 
+                  className="text-white font-semibold ml-2"
+                  style={{ color: colours.text }}
+                >
+                  {isEditing ? button[1] : button[0]}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={onCancel}
+                className="flex-1 items-center justify-center p-4 rounded-lg bg-gray-400"
+              >
+                <Text className="text-white font-semibold">Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        }
+        contentContainerStyle={{
+          paddingHorizontal: 16, // adds space from screen edges
+          paddingVertical: 12,   // adds space top and bottom
+        }}
+      />
       
-
-      <Divider className="mt-4 mb-8" />
-
-      {/* Action Buttons */}
-      <View className="flex-row gap-4 mb-6">
-        <TouchableOpacity
-          onPress={() => handlePressSubmit()}
-          style={{ backgroundColor: colours.card }}
-          className="flex-1 flex-row items-center justify-center p-4 rounded-lg"
-        >
-          <PlusIcon size={20} color={colours.text} />
-          <Text 
-            className="text-white font-semibold ml-2"
-            style={{ color: colours.text }}
-          >
-            {isEditing ? button[1] : button[0]}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={onCancel}
-          className="flex-1 items-center justify-center p-4 rounded-lg bg-gray-400"
-        >
-          <Text className="text-white font-semibold">Cancel</Text>
-        </TouchableOpacity>
-      </View>
     </Box>
   );
 }

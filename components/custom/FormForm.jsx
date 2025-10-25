@@ -111,53 +111,66 @@ export default function FormBase({
     onSubmit();
   }
 
-  const renderField = ({ item: field}) => (
-    <Box key={field.name} className="">
-      {field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
-        <Box key={field.name} className="mb-4">
-          <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
-          <DropDownPicker
-            open={openDropdown === field.name}
-            value={formData[field.name]}
-            items={field.options.map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            setOpen={(isOpen) =>
-              setOpenDropdown(isOpen ? field.name : null)
-            }
-            setValue={(callback) => {
-              const value = callback(formData[field.name]);
-              handleChange(field.name, value);
-            }}
-            placeholder={field.placeholder || 'Select an option'}
-            style={{
-              borderColor: '#9CA3AF',
-              backgroundColor: '#fff',
-            }}
-            dropDownContainerStyle={{
-              borderColor: '#9CA3AF',
-              backgroundColor: '#fff',
-            }}
+  
+  const renderField = ({ item: field}) => {
+
+    // Check if options is an array
+    const optionsArray = Array.isArray(field.options) ? field.options : [];
+
+    return (
+      <Box key={field.name} className="">
+        {field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
+          <Box key={field.name} className="mb-4">
+            <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
+            <DropDownPicker
+              open={openDropdown === field.name}
+              value={formData[field.name]}
+              items={optionsArray.map((option) => ({
+                label: option,
+                value: option,
+              }))}
+              setOpen={(isOpen) =>
+                setOpenDropdown(isOpen ? field.name : null)
+              }
+              setValue={(callback) => {
+                const value = callback(formData[field.name]);
+                handleChange(field.name, value);
+              }}
+              placeholder={field.placeholder || 'Select an option'}
+              style={{
+                borderColor: '#9CA3AF',
+                backgroundColor: '#fff',
+              }}
+              dropDownContainerStyle={{
+                borderColor: '#9CA3AF',
+                backgroundColor: '#fff',
+              }}
+              
+            />
+          </Box>
+        ) : field.type === 'map' ? ( // If Map
+          <Box key={field.name} className="mb-4">
+            <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
             
-          />
-        </Box>
-      ) : ( // Else if Text or Multiline render TextInput
-        <Box key={field.name} className="mb-4">
-          <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
-          <TextInput
-            value={formData[field.name]}
-            onChangeText={(value) => handleChange(field.name, value)}
-            placeholder={field.placeholder}
-            placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
-            multiline={field.multiline || false}
-            keyboardType={field.is_num === true ? 'numeric' : 'default'}
-            className="border border-gray-400 rounded-lg p-3 bg-white text-black"
-          />
-        </Box>
-      )}
-    </Box>
-  )
+            <Text>MAP</Text>
+          </Box>
+        ) : ( // Else if Text or Multiline render TextInput
+          <Box key={field.name} className="mb-4">
+            <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
+            <TextInput
+              value={formData[field.name]}
+              onChangeText={(value) => handleChange(field.name, value)}
+              placeholder={field.placeholder}
+              placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
+              multiline={field.multiline || false}
+              keyboardType={field.is_num === true ? 'numeric' : 'default'}
+              className="border border-gray-400 rounded-lg p-3 bg-white text-black"
+            />
+          </Box>
+        )}
+      </Box>
+    )
+  }
 
 
   /* Main Content */

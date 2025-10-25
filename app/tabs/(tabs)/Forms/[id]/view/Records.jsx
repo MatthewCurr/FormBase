@@ -5,6 +5,7 @@
 // ================================
 import { useState, useEffect, useCallback } from 'react';
 import { Alert, TouchableOpacity } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 
 // ================================
 // Navigation and Theme Imports
@@ -33,7 +34,7 @@ import HapticButton from '@/components/custom/HapticButton'
 // Haptics & API Imports
 // ================================
 import * as Haptics from 'expo-haptics';
-import { getRecords, deleteForm, getForm } from '@/restapi';
+import { getRecords, deleteRecord, getForm } from '@/restapi';
 
 
 // Main Forms List Screen Component
@@ -55,12 +56,15 @@ export default function FormListScreen() {
   // List of records from API
   const [records, setRecords] = useState([]);
 
+  // Store Form Name for display
   const [formName, setFormName] = useState('');
 
   // Loading and Error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Copied Text in Clipboard
+  const [copiedText, setCopiedText] = useState('');
 
   // ===================
   // Use Effects
@@ -101,28 +105,13 @@ export default function FormListScreen() {
   // ===================
 
   /**
-   * Populates the form fields for editing and toggles edit mode.
-   * @param {Object} item - The form item to edit.
+   * Confirms deletion and removes the record if confirmed.
+   * @param {number} id - ID of the record to delete.
    */
-  const handleEditForm = (item) => {
-    router.push(`tabs/Forms/${item.id}/edit`)
-  }
-
-  /**
-   * Brings up empty form to enter. 
-   */
-  const handleAddForm = () => {
-    router.push(`tabs/Forms/AddForm`)
-  }
-
-  /**
-   * Confirms deletion and removes the form if confirmed.
-   * @param {number} id - ID of the form to delete.
-   */
-  const handleDeleteForm = async (id) => {
+  const handleDeleteRecord = async (id) => {
     Alert.alert(
-      'Delete Form',
-      'Are you sure you want to delete this form?\n\n-Doing so will delete all fields and records associated with the form.',
+      'Delete Record',
+      'Are you sure you want to permanently delete this record?\n',
       [
         {
           text: 'Cancel',
@@ -133,9 +122,9 @@ export default function FormListScreen() {
           style: 'destructive', // IOS Delete Style
           onPress: async () => {
             try {
-              await deleteForm(id); // Delete form from API.
+              await deleteRecord(id); // Delete form from API.
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              fetchForms(); // Refresh list after deletion
+              fetchRecords(); // Refresh list after deletion
             } catch (err) {
               console.error('Failed to delete form:', err);
               await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -147,14 +136,20 @@ export default function FormListScreen() {
   };
 
   /**
-   * Handles viewing a form's fields and records.
-   * @param {*} item - The form item to view.
+   * Handles copying a record's data.
+   * @param {*} item - The record item to copy.
    */
-  const handleViewForm = (item) => {
-    const path = `tabs/Forms/${item.id}/view/AddRecord`
-    router.push(path); // Navigate to edit page.
+  const handleCopyRecord = async (item) => {
+    try {
+      // Convert object to JSON string
+      const jsonString = JSON.stringify(item, null, 1); // Copy with spaces
+      await Clipboard.setStringAsync(jsonString);
+      Alert.alert('Copied!', 'Record JSON has been copied to clipboard.');
+    } catch (err) {
+      console.error('Failed to copy record:', err);
+      Alert.alert('Error', 'Failed to copy record.');
+    }
   };
-
 
   // ===================
   // UI Rendering
@@ -173,7 +168,7 @@ export default function FormListScreen() {
           </Text>
         </Center>
       ) : (
-        <Box className="px-4 pt-4">
+        <Box className="flex-1 px-4 pt-4">
           {/* Form Name and Number of Records */}
           <Center className="m-4">
             <Heading>Records for {formName}</Heading>
@@ -189,11 +184,11 @@ export default function FormListScreen() {
                 record={item}
                 colours={colours}
               >
-                {/* Edit Button */}
+                {/* Copy Button */}
                 <HapticButton
                   className="flex-1 p-1 w-20 rounded-2xl items-center absolute top-2 right-2"
                   style={{ backgroundColor: colours.card, borderColor: colours.primary, borderWidth: 2 }}
-                  onPress={() => onCopy(item)}
+                  onPress={() => handleCopyRecord(item)}
                 >
                   <Text style={{ color: colours.text }} className="font-semibold">
                     Copy
@@ -203,7 +198,7 @@ export default function FormListScreen() {
                 {/* Delete Button */}
                 <HapticButton
                   className="mt-4 mx-2 flex-1 p-3 rounded-lg items-center bg-red-500"
-                  onPress={() => onDelete(item.id)}
+                  onPress={() => handleDeleteRecord(item.id)}
                   haptic="heavy"
                 >
                   <Text style={{ color: '#fff' }} className="font-semibold">

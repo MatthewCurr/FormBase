@@ -140,8 +140,7 @@ export default function FormListScreen() {
    * @param {*} item - The form item to view.
    */
   const handleViewForm = (item) => {
-    const path = `tabs/Forms/${item.id}/view/Add`
-    console.log(path)
+    const path = `tabs/Forms/${item.id}/view/AddRecord`
     router.push(path); // Navigate to edit page.
   };
 

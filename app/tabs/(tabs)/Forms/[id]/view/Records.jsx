@@ -27,8 +27,7 @@ import { Heading } from '@/components/ui/heading'
 // Custom Component Imports
 // ================================
 import RecordDisplay from '@/components/custom/RecordDisplay';
-
-import PlusIcon from '@/assets/icons/Plus';
+import HapticButton from '@/components/custom/HapticButton'
 
 // ================================
 // Haptics & API Imports
@@ -189,10 +188,31 @@ export default function FormListScreen() {
               <RecordDisplay
                 record={item}
                 colours={colours}
-              />
+              >
+                {/* Edit Button */}
+                <HapticButton
+                  className="flex-1 p-1 w-20 rounded-2xl items-center absolute top-2 right-2"
+                  style={{ backgroundColor: colours.card, borderColor: colours.primary, borderWidth: 2 }}
+                  onPress={() => onCopy(item)}
+                >
+                  <Text style={{ color: colours.text }} className="font-semibold">
+                    Copy
+                  </Text>
+                </HapticButton>
+        
+                {/* Delete Button */}
+                <HapticButton
+                  className="mt-4 mx-2 flex-1 p-3 rounded-lg items-center bg-red-500"
+                  onPress={() => onDelete(item.id)}
+                  haptic="heavy"
+                >
+                  <Text style={{ color: '#fff' }} className="font-semibold">
+                    Delete
+                  </Text>
+                </HapticButton>
+              </RecordDisplay>
             )}
             keyExtractor={(item, index) => `${item.form_id}-${index}`} // Each Record has unique ID
-            className=""
           />
         </Box>
       )}

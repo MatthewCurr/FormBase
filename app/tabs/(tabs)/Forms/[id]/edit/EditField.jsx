@@ -31,7 +31,7 @@ export default function AddForm() {
   const handleSubmit = async () => {
 
     // First, check if dropdown options are required
-    if (formData.field_type === 'DropDown' && !formData.options?.trim()) {
+    if (formData.field_type === 'DropDown' && !formData.options) {
       Alert.alert('Missing Required Fields', `Please enter dropdown options before submitting.`)
       return;
     }
@@ -78,12 +78,15 @@ export default function AddForm() {
 
           <TextInput
             value={formData["options"] || ''}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
+
+              const options = value.split(',')
+
               setFormData((prev) => ({
                 ...prev,
-                ["options"]: value,
+                ["options"]: options,
               }))
-            }
+            }}
             placeholder="Enter options separated by commas"
             placeholderTextColor="#9CA3AF"
             className="border border-gray-400 rounded-lg p-3 bg-white text-black"

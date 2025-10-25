@@ -95,7 +95,6 @@ export default function FormMap() {
 
   return (
     <Box style={{ padding: 20 }}>
-      <Text>Map Page for form {id}</Text>
       
       {loading ? (
         <Text>Loading fields...</Text>

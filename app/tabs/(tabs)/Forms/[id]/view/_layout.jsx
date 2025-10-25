@@ -22,6 +22,10 @@ export default function EditTabsLayout() {
         ),
         headerTitleAlign: 'center',
       }}
-    />
+    >
+      <Tabs.Screen name="AddRecord" options={{ title: 'Add Record'}}/>
+      <Tabs.Screen name="Map" options={{ title: 'Map' }} />
+      <Tabs.Screen name="Records" options={{ title: 'Records'}}/>
+    </Tabs>
   );
 }

@@ -19,12 +19,10 @@ import { useLocalSearchParams } from 'expo-router';
 import { Box } from '@/components/ui/box';
 import { Center } from '@/components/ui/center';
 import { Text } from '@/components/ui/text';
-import { FlatList } from '@/components/ui/flat-list';
 
 // ================================
 // Custom Component Imports
 // ================================
-import FormItem from '@/components/custom/FormItem';
 import FormBase from '@/components/custom/FormForm'
 import HapticButton from '@/components/custom/HapticButton'
 
@@ -32,7 +30,7 @@ import HapticButton from '@/components/custom/HapticButton'
 // Haptics & API Imports
 // ================================
 import * as Haptics from 'expo-haptics';
-import { getFields, deleteField } from '@/restapi';
+import { getFields, deleteField, createRecord } from '@/restapi';
 
 
 export default function AddRecord() {
@@ -76,8 +74,6 @@ export default function AddRecord() {
     try {
       setLoading(true);
       const fields = await getFields(id);
-      console.log(`\n\n\n\n`)
-      console.log('Fetched forms:', fields);
 
       // Map Fetched Fields to Form Data Structure
       const formFields = mapFetchedToForm(fields)
@@ -101,7 +97,7 @@ export default function AddRecord() {
       multiline: f.field_type.toLowerCase() === "multiline" ? true : false,
       is_num: f.is_num,
       type: f.field_type.toLowerCase(),
-      options: [],
+      options: f.options
     }));
   }
 
@@ -115,49 +111,29 @@ export default function AddRecord() {
   }
 
   const handleSubmit = async () => {
-    console.log("Handle Submit")
+
+    try {
+
+      // Add form_id foreign key into the API payload
+      const payload = {
+        form_id: id,
+        values: { ...formData } // Add fields as JSONB field
+      };
+
+      // Create the Field Data in the API
+      console.log('Form Data is', payload);
+      await createRecord(payload);
+
+      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+      // Reset Form Data
+      setFormData({});
+
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Submission Error",`Failed to add record\n${err}`);
+    }
   }
-
-  /**
-   * Confirms deletion and removes the form if confirmed.
-   * @param {number} id - ID of the form to delete.
-   */
-  const handleDeleteForm = async (id) => {
-    Alert.alert(
-      'Delete Form',
-      'Are you sure you want to delete this field?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel', // React Native Cancel Style
-        },
-        {
-          text: 'Delete',
-          style: 'destructive', // IOS Delete Style
-          onPress: async () => {
-            try {
-              await deleteField(id); // Delete form from API.
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              fetchFields(); // Refresh list after deletion
-            } catch (err) {
-              console.error('Failed to delete field:', err);
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-            }
-          },
-        },
-      ]
-    );
-  };
-
-  /**
-   * Handles viewing a form's fields and records.
-   * @param {*} item - The form item to view.
-   */
-  const handleViewForm = (item) => {
-    const path = `tabs/Forms/${item.id}/view/AddRecord`
-    router.push(path); // Navigate to edit page.
-  };
-
 
   // ===================
   // UI Rendering
@@ -185,7 +161,6 @@ export default function AddRecord() {
           </HapticButton>
         </Center>
       ) : (
-        // Render field list
         // Render field list
         <FormBase
           formData={formData}

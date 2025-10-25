@@ -7,7 +7,7 @@ import { createForm } from '@/restapi';
 
 import { Box } from '@/components/ui/box';
 
-import { Text, TextInput, Alert } from 'react-native';
+import { Text, TextInput, Alert, View, Switch } from 'react-native';
 
 export default function AddForm() {
   const router = useRouter();
@@ -17,6 +17,8 @@ export default function AddForm() {
 
   const formFields = [
     { name: 'name', label: 'Field Name', placeholder: 'Enter Field Name', required: true, multiline: true, is_num: true},
+    { name: 'test', label: 'Field Name', placeholder: 'Enter Field Name', required: true, multiline: true, is_num: true},
+    { name: 'test2', label: 'Field Name', placeholder: 'Enter Field Name', required: true, multiline: true, is_num: true},
     { name: 'fieldtype', label: 'Field Type', placeholder: 'Enter Field Type', required: true, 
       type: 'dropdown', options: ["Text", "Multiline", "DropDown", "Image", "Location"]},
   ];
@@ -57,9 +59,10 @@ export default function AddForm() {
       title={titles}
       button={buttons}
     >
+      {/* Dropdown Options -- Only if Dropdown Selected */}
       {formData.fieldtype === 'DropDown' ? (
         <Box className="mb-4">
-          <Text className="text-sm mb-1 font-semibold dark:text-white">
+          <Text className="text-base mb-1 font-semibold dark:text-white">
             Dropdown Options
           </Text>
 
@@ -77,6 +80,45 @@ export default function AddForm() {
           />
         </Box>
       ) : null}
+      {/* Form Option Toggle Switches */}
+      <Box className="mb-4">
+        <Text className="text-base font-semibold mb-2 dark:text-white">
+          Field Options
+        </Text>
+
+        {/* Required */}
+        <View className="flex-row justify-between items-center mb-2">
+          <Text className="dark:text-white">Required</Text>
+          <Switch
+            value={!!formData.required}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, required: value }))
+            }
+          />
+        </View>
+
+        {/* Numeric */}
+        <View className="flex-row justify-between items-center mb-2">
+          <Text className="dark:text-white">Is Numeric</Text>
+          <Switch
+            value={!!formData.is_num}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, is_num: value }))
+            }
+          />
+        </View>
+
+        {/* Multiline */}
+        <View className="flex-row justify-between items-center">
+          <Text className="dark:text-white">Multiline</Text>
+          <Switch
+            value={!!formData.multiline}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, multiline: value }))
+            }
+          />
+        </View>
+      </Box>
     </FormBase>
   );
 }

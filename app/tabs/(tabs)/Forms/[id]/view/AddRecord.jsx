@@ -3,14 +3,14 @@
 // ================================
 // React & React Native Imports
 // ================================
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 
 // ================================
 // Navigation and Theme Imports
 // ================================
 import { useRouter } from 'expo-router';
-import { useTheme } from '@react-navigation/native';
+import { useTheme, useFocusEffect } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
 
 // ================================
@@ -25,6 +25,7 @@ import { FlatList } from '@/components/ui/flat-list';
 // Custom Component Imports
 // ================================
 import FormItem from '@/components/custom/FormItem';
+import FormBase from '@/components/custom/FormForm'
 import HapticButton from '@/components/custom/HapticButton'
 
 // ================================
@@ -47,18 +48,25 @@ export default function AddRecord() {
   // List of fields from API
   const [fields, setFields] = useState([]);
 
+  const [formData, setFormData] = useState({});
+
   // Loading and Error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const titles = ["Add a Record"]
+  const buttons = ["Add Record"]
 
   // ===================
   // Use Effects
   // ===================
 
-  useEffect(() => {
-    // Fetch fields on component mount.
-    fetchFields();
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch fields on component focus.
+      fetchFields();
+    }, [id])
+  );
 
   /**
    * Fetches all fields from the server and updates state.
@@ -70,7 +78,11 @@ export default function AddRecord() {
       const fields = await getFields(id);
       console.log(`\n\n\n\n`)
       console.log('Fetched forms:', fields);
-      setFields(fields);
+
+      // Map Fetched Fields to Form Data Structure
+      const formFields = mapFetchedToForm(fields)
+      // Set Fields for use in rendering.
+      setFields(formFields);
     } catch (err) {
       console.error('Error fetching fields:', err);
       setError('Failed to load fields.');
@@ -80,28 +92,30 @@ export default function AddRecord() {
     }
   };
 
+  function mapFetchedToForm(fields) {
+    return fields.map((f) => ({
+      name: f.name,
+      label: f.name,
+      placeholder: `Enter ${f.name}`,
+      required: f.required,
+      multiline: f.field_type.toLowerCase() === "multiline" ? true : false,
+      is_num: f.is_num,
+      type: f.field_type.toLowerCase(),
+      options: [],
+    }));
+  }
+
 
   // ===================
   // Form Handlers
   // ===================
 
-  /**
-   * Populates the form fields for editing and toggles edit mode.
-   * @param {Object} item - The form item to edit.
-   */
-  const handleEditForm = (item) => {
-    router.push(`tabs/Forms/${item.id}/edit`)
-  }
-
-  /**
-   * Brings up empty form to enter. 
-   */
-  const handleAddForm = () => {
-    router.push(`tabs/Forms/AddForm`)
-  }
-
   const handleEditPress = () => {
     router.push(`tabs/Forms/${id}/edit/EditField`)
+  }
+
+  const handleSubmit = async () => {
+    console.log("Handle Submit")
   }
 
   /**
@@ -172,19 +186,16 @@ export default function AddRecord() {
         </Center>
       ) : (
         // Render field list
-        <FlatList
-          data={fields}
-          renderItem={({ item }) => (
-            <FormItem
-              item={item}
-              onEdit={handleEditForm}
-              onView={handleViewForm}
-              onDelete={handleDeleteForm}
-              colours={colours}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 100 }}
+        // Render field list
+        <FormBase
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleSubmit}
+          onCancel={() => router.push('/tabs/Forms')}
+          isEditing={false}
+          fields={fields}
+          title={titles}
+          button={buttons}
         />
       )}
     </Box>

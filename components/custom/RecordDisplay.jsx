@@ -20,8 +20,8 @@ export default function RecordDisplay({ record, colours }) {
 
   return (
     <Box
-      className="mb-4 p-4 rounded-xl"
-      style={{ backgroundColor: 'red' }}
+      className="mx-2 mb-4 p-4 rounded-xl"
+      style={{ backgroundColor: colours.card }}
     >
 
       {/* Render record list */}
@@ -34,7 +34,6 @@ export default function RecordDisplay({ record, colours }) {
           />
         )}
         keyExtractor={(record) => `${record.key}-${record.value}`}
-        contentContainerStyle={{ paddingBottom: 100 }}
       />
     </Box>
   );

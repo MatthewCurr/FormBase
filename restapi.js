@@ -151,6 +151,7 @@ export async function deleteField(id) {
 /**
  * Function to list all fields associated with the given form id.
  * 
+ * @param {string} form_id - The ID of the form to retrieve fields from.
  * @returns {Promise<Array>} - An array of field objects.
  */
 export async function getFields(form_id) {
@@ -170,3 +171,62 @@ export async function getField(id) {
   return apiRequest(`/field?id=eq.${id}`);
 }
 
+/* =============================
+ *      Record Functions
+ * =============================
+ */
+
+/**
+ * Function to insert a new record into the database.
+ * 
+ * @param {object} record - The record data to insert.
+ * @returns {Promise<object>} - The created record object returned by the API.
+ */
+export async function createRecord(record) {
+  console.log("Creating record with data:", record);  
+  return apiRequest('/record', 'POST', record);
+}
+
+/**
+ * Function to update an existing record
+ * 
+ * @param {string} id - The record id to update
+ * @returns {Promise<object>} - The updated record object.  
+ */
+export async function updateRecord(record, id) {
+  return apiRequest(`/record?id=eq.${id}`, 'PATCH', record)
+}
+
+/**
+ * Function to delete an existing record
+ * 
+ * @param {string} id - The record id to delete
+ * @returns {Promise<object>} - Response as a JSON object  
+ */
+export async function deleteRecord(id) {
+  console.log("Deleting record with id:", id);
+  return apiRequest(`/record?id=eq.${id}`, 'DELETE')
+}
+
+/**
+ * Function to list all records associated with the given form id.
+ * 
+ * @param {string} form_id - The ID of the form to retrieve records from.
+ * @returns {Promise<Array>} - An array of field objects.
+ */
+export async function getRecords(form_id) {
+  if (form_id)
+    return apiRequest(`/record?form_id=eq.${form_id}`);
+  else
+    return apiRequest(`/record`);
+}
+
+/**
+ * Function to get a single record by its ID.
+ * 
+ * @param {string} id - The ID of the record to retrieve.
+ * @returns {Promise<object>} - The record object matching the ID.
+ */
+export async function getRecord(id) {
+  return apiRequest(`/record?id=eq.${id}`);
+}

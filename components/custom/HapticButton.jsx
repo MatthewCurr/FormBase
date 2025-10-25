@@ -50,7 +50,7 @@ export default function HapticButton({
       activeOpacity={activeOpacity}
       disabled={disabled}
       className={
-        `p-3 rounded-lg items-center justify-center flex-row ${className}`
+        `p-1 rounded-lg items-center justify-center flex-row ${className}`
       }
       style={style}
     >

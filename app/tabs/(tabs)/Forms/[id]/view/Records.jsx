@@ -21,11 +21,12 @@ import { Box } from '@/components/ui/box';
 import { Center } from '@/components/ui/center';
 import { Text } from '@/components/ui/text';
 import { FlatList } from '@/components/ui/flat-list';
+import { Heading } from '@/components/ui/heading'
 
 // ================================
 // Custom Component Imports
 // ================================
-import FormItem from '@/components/custom/FormItem';
+import RecordDisplay from '@/components/custom/RecordDisplay';
 
 import PlusIcon from '@/assets/icons/Plus';
 
@@ -33,7 +34,7 @@ import PlusIcon from '@/assets/icons/Plus';
 // Haptics & API Imports
 // ================================
 import * as Haptics from 'expo-haptics';
-import { getRecords, deleteForm } from '@/restapi';
+import { getRecords, deleteForm, getForm } from '@/restapi';
 
 
 // Main Forms List Screen Component
@@ -55,6 +56,8 @@ export default function FormListScreen() {
   // List of records from API
   const [records, setRecords] = useState([]);
 
+  const [formName, setFormName] = useState('');
+
   // Loading and Error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -64,12 +67,10 @@ export default function FormListScreen() {
   // Use Effects
   // ===================
 
-  useFocusEffect(
-    useCallback(() => {
-      // Fetch records on component focus.
-      fetchRecords();
-    }, [id])
-  );
+  useEffect(() => {
+    // Fetch records on record length update.
+    fetchRecords();
+  }, [records.length])
 
   /**
    * Fetches all records from the server and updates state.
@@ -78,9 +79,14 @@ export default function FormListScreen() {
   const fetchRecords = async () => {
     try {
       setLoading(true);
+
+      // Fetch and Set Records
       const records = await getRecords();
-      console.log('Fetched forms:', records);
       setRecords(records);
+
+      // Fetch and Set Form Name
+      const form = await getForm(id);
+      setFormName(form[0].name);
     } catch (err) {
       console.error('Error fetching records:', err);
       setError('Failed to load records.');
@@ -168,21 +174,27 @@ export default function FormListScreen() {
           </Text>
         </Center>
       ) : (
-        // Render form list
-        <FlatList
-          data={records}
-          renderItem={({ item }) => (
-            <FormItem
-              item={item}
-              onEdit={handleEditForm}
-              onView={handleViewForm}
-              onDelete={handleDeleteForm}
-              colours={colours}
-            />
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 100 }}
-        />
+        <Box className="px-4 pt-4">
+          {/* Form Name and Number of Records */}
+          <Center className="m-4">
+            <Heading>Records for {formName}</Heading>
+
+            <Text>Showing {records.length} records...</Text>
+          </Center>
+
+          {/* Render record display list */}
+          <FlatList
+            data={records}
+            renderItem={({ item }) => (
+              <RecordDisplay
+                record={item}
+                colours={colours}
+              />
+            )}
+            keyExtractor={(item, index) => `${item.form_id}-${index}`} // Each Record has unique ID
+            className=""
+          />
+        </Box>
       )}
     </Box>
   );

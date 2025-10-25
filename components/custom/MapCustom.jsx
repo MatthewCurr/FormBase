@@ -11,14 +11,17 @@ import { Text } from 'react-native';
 // UI Component Imports
 // ================================
 
+import { Center } from '@/components/ui/center'
+import { Divider } from '@/components/ui/divider'
 import { Box } from '@/components/ui/box';
 
 export default function MapCustom({field}) {
 
   return (
-    <Box key={field.name} className="mb-4">
-      <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
+    <Center key={field.name} className="mt-2">
+      <Text className="text-xl mb-2 mt-4 font-semibold dark:text-white">{field.label}</Text>
+      <Divider className="mb-4"/>
       <MapView style={{width: '100%', height: '100%' }}/>
-    </Box>
+    </Center>
   )
 }

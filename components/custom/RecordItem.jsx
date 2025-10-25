@@ -17,19 +17,15 @@ export default function RecordItem({ item, colours }) {
 
   return (
     <Box
-      className="mx-4 mb-4 p-4 rounded-xl"
-      style={{ backgroundColor: colours.card }}
+      className="flex-row gap-1"
+      style={{  }}
     >
-
-      <View style={{ marginBottom: 6 }}>
-        <Text style={{ color: colours.text, fontWeight: '600' }}>
-          {item.key}:
-        </Text>
-        <Text style={{ color: colours.text, marginLeft: 8 }}>
-          {item.value}
-        </Text>
-      </View>
-      
+      <Text style={{ color: colours.text, fontWeight: '600' }}>
+        {item.key}:
+      </Text>
+      <Text style={{ color: colours.text }}>
+        {item.value}
+      </Text>
     </Box>
   );
 }

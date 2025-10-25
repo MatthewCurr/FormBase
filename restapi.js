@@ -111,3 +111,62 @@ export async function getForm(id) {
   return apiRequest(`/form?id=eq.${id}`);
 }
 
+/* =============================
+ *      Field Functions
+ * =============================
+ */
+
+/**
+ * Function to insert a new field into the database.
+ * 
+ * @param {object} field - The field data to insert.
+ * @returns {Promise<object>} - The created field object returned by the API.
+ */
+export async function createField(field) {
+  console.log("Creating field with data:", field);  
+  return apiRequest('/field', 'POST', field);
+}
+
+/**
+ * Function to update an existing field
+ * 
+ * @param {string} id - The field id to update
+ * @returns {Promise<object>} - The updated field object.  
+ */
+export async function updateField(field, id) {
+  return apiRequest(`/field?id=eq.${id}`, 'PATCH', field)
+}
+
+/**
+ * Function to delete an existing field
+ * 
+ * @param {string} id - The field id to delete
+ * @returns {Promise<object>} - Response as a JSON object  
+ */
+export async function deleteField(id) {
+  console.log("Deleting field with id:", id);
+  return apiRequest(`/field?id=eq.${id}`, 'DELETE')
+}
+
+/**
+ * Function to list all fields associated with the given form id.
+ * 
+ * @returns {Promise<Array>} - An array of field objects.
+ */
+export async function getFields(form_id) {
+  if (form_id)
+    return apiRequest(`/field?form_id=eq.${form_id}`);
+  else
+    return apiRequest(`/field`);
+}
+
+/**
+ * Function to get a single field by its ID.
+ * 
+ * @param {string} id - The ID of the field to retrieve.
+ * @returns {Promise<object>} - The field object matching the ID.
+ */
+export async function getField(id) {
+  return apiRequest(`/field?id=eq.${id}`);
+}
+

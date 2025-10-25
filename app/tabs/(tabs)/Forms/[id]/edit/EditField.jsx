@@ -3,7 +3,7 @@ import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { useTheme } from '@react-navigation/native';
 import FormBase from '@/components/custom/FormForm';
 import * as Haptics from 'expo-haptics';
-import { createForm } from '@/restapi';
+import { createField, getFields } from '@/restapi';
 
 import { Box } from '@/components/ui/box';
 
@@ -13,13 +13,11 @@ export default function AddForm() {
   const router = useRouter();
   const { id } = useGlobalSearchParams(); 
 
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: '', field_type: '', required: false, is_num: false });
 
   const formFields = [
-    { name: 'name', label: 'Field Name', placeholder: 'Enter Field Name', required: true, multiline: true, is_num: true},
-    { name: 'test', label: 'Field Name', placeholder: 'Enter Field Name', required: true, multiline: true, is_num: true},
-    { name: 'test2', label: 'Field Name', placeholder: 'Enter Field Name', required: true, multiline: true, is_num: true},
-    { name: 'fieldtype', label: 'Field Type', placeholder: 'Enter Field Type', required: true, 
+    { name: 'name', label: 'Field Name', placeholder: 'Enter Field Name', required: true},
+    { name: 'field_type', label: 'Field Type', placeholder: 'Enter Field Type', required: true, 
       type: 'dropdown', options: ["Text", "Multiline", "DropDown", "Image", "Location"]},
   ];
   
@@ -27,24 +25,36 @@ export default function AddForm() {
   const buttons = ["Add Field"]
 
   useEffect(() => {
-    setFormData({});
+    setFormData({ name: '', field_type: '', required: false, is_num: false });
   }, [id])
 
   const handleSubmit = async () => {
 
     // First, check if dropdown options are required
-    if (formData.fieldtype === 'DropDown' && !formData.options?.trim()) {
+    if (formData.field_type === 'DropDown' && !formData.options?.trim()) {
       Alert.alert('Missing Required Fields', `Please enter dropdown options before submitting.`)
       return;
     }
 
     try {
-      await createForm(formData);
+      // Get the current number of fields for this form
+      const existingFields = await getFields(id);
+      const order_index = (existingFields?.length || 0) + 1;
+
+      // Add order_index into the API payload
+      const payload = { ...formData, order_index, form_id: id };
+
+      // Create the Field Data in the API
+      await createField(payload);
+
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      router.push('/tabs/Forms'); // go back to forms list
+      router.push(`/tabs/Forms/${id}/edit/EditField`); // go back to fields edit
+
+      // Reset Form Data
+      setFormData({ name: '', field_type: '', required: false, is_num: false });
     } catch (err) {
       console.error(err);
-      Alert.alert("Submission Error",`Failed to save form\n${err}`);
+      Alert.alert("Submission Error",`Failed to save field\n${err}`);
     }
   };
 
@@ -60,7 +70,7 @@ export default function AddForm() {
       button={buttons}
     >
       {/* Dropdown Options -- Only if Dropdown Selected */}
-      {formData.fieldtype === 'DropDown' ? (
+      {formData.field_type === 'DropDown' ? (
         <Box className="mb-4">
           <Text className="text-base mb-1 font-semibold dark:text-white">
             Dropdown Options
@@ -104,17 +114,6 @@ export default function AddForm() {
             value={!!formData.is_num}
             onValueChange={(value) =>
               setFormData((prev) => ({ ...prev, is_num: value }))
-            }
-          />
-        </View>
-
-        {/* Multiline */}
-        <View className="flex-row justify-between items-center">
-          <Text className="dark:text-white">Multiline</Text>
-          <Switch
-            value={!!formData.multiline}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, multiline: value }))
             }
           />
         </View>

@@ -20,8 +20,12 @@ import { Box } from '@/components/ui/box';
 // ================================
 // Custom Component Imports
 // ================================
-
 import MapCustom from '@/components/custom/MapCustom'
+
+// ================================
+// Haptics & API Imports
+// ================================
+import { getFields } from '@/restapi';
 
 export default function FormMap() {
   
@@ -87,7 +91,7 @@ export default function FormMap() {
   }
 
   // Check if any field is a location
-  const hasLocationField = fields.some((f) => f.type === 'location');
+  const hasLocationField = fields.some((f) => f.type?.toLowerCase() === 'location');
 
   return (
     <Box style={{ padding: 20 }}>
@@ -98,7 +102,7 @@ export default function FormMap() {
       ) : error ? (
         <Text>{error}</Text>
       ) : hasLocationField ? (
-        <MapCustom field={fields.find((f) => f.type === 'location')} />
+        <MapCustom field={fields.find((f) => f.type?.toLowerCase() === 'location')} />
       ) : (
         <Text>This Form does not have any map fields</Text>
       )}

@@ -10,9 +10,11 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import MapView from 'react-native-maps';
 
 // ================================
-// Location Imports
+// Location and Image Imports
 // ================================
 import * as Location from 'expo-location';
+import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 
 // ================================
 // Navigation and Theme Imports
@@ -36,6 +38,7 @@ import Fontisto from '@expo/vector-icons/Fontisto';
 // Custom Component Imports
 // ================================
 import HapticButton from '@/components/custom/HapticButton'
+import Photo from '@/components/custom/Photo'
 
 // ================================
 // Haptics Imports
@@ -95,6 +98,11 @@ export default function FormBase({
   // Location State
   const [location, setLocation] = useState(null);
 
+  // Image Picker State
+  const [photoState, setPhotoState] = useState({});
+  
+  const hasPhoto = Boolean(photoState.uri); // Check if photo exists
+
   /**
    * Handle input change event and update form state.
    * @param {string} field - The field name (key in formData)
@@ -115,6 +123,10 @@ export default function FormBase({
         // Check for location fields (objects with latitude/longitude)
         if (field.type === 'location') {
           return !formData[field.name]?.latitude || !formData[field.name]?.longitude;
+        }
+
+        if (field.type === 'image') {
+          return !hasPhoto;
         }
 
         // Else check for normal text fields
@@ -160,6 +172,48 @@ export default function FormBase({
     })();
   };
 
+  async function handlePhotoPress(field) {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+
+      // Get the source URI of the selected image
+      const sourceUri = result.assets[0].uri;
+
+      // Move to document directory for persistent storage if needed
+      const destDir = FileSystem.documentDirectory + 'images/';
+      await FileSystem.makeDirectoryAsync(destDir, { intermediates: true });
+
+      // Get file name from URI
+      const fileName = sourceUri.split('/').pop();
+
+      // Destination URI
+      const destUri = destDir + fileName;
+      
+      // Copy the file to the app's document directory
+      await FileSystem.copyAsync({
+        from: sourceUri,
+        to: destUri,
+      });
+      
+      // Update photo state with new URI
+      setPhotoState(result.assets[0]);
+
+      // Update form data with image URI
+      setFormData({ ...formData, [field.name]: destUri });
+    }
+  }
+
+  // Function to remove the selected photo
+  async function handlePhotoRemove() {
+      setPhotoState({});
+  }
+
   const renderField = ({ item: field}) => {
 
     // Check if options is an array
@@ -167,6 +221,7 @@ export default function FormBase({
 
     return (
       <Box key={field.name} className="">
+        
         {field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
           <Box key={field.name} className="mb-4">
             <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
@@ -193,14 +248,62 @@ export default function FormBase({
                 borderColor: '#9CA3AF',
                 backgroundColor: '#fff',
               }}
-              
             />
           </Box>
+
         ) : field.type === 'image' ? ( // If Image Picker
-          <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+          <>
+            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+
+            {/* Photo Component to display image */}
+            <Photo 
+              hasPhoto={hasPhoto}
+              photoState={photoState}
+            />
+
+            {/* Image Upload Button */}
+            <HapticButton 
+              onPress={() => handlePhotoPress(field)}
+              className="mt-2 flex-1 p-3 rounded-lg items-center"
+              style={{ backgroundColor: colours.primary }}
+            >
+              {hasPhoto ? (
+                <Text 
+                  style={{ color: '#fff' }} 
+                  className="font-semibold"
+                >
+                  Change Image
+                </Text>
+              ) : (
+                <Text 
+                  style={{ color: '#fff' }}
+                  className="font-semibold"
+                >
+                  Upload Image
+                </Text>
+              )}
+            </HapticButton>
+
+            {/* Show Remove Image Button if photo exists */}
+            {hasPhoto && (
+              <HapticButton 
+                onPress={handlePhotoRemove}
+                className="mt-2 flex-1 p-3 rounded-lg items-center"
+                style={{ backgroundColor: colours.primary }}
+              >
+                <Text 
+                  style={{ color: '#fff' }}
+                  className="font-semibold"
+                >
+                  Remove Image
+                </Text>
+            </HapticButton> 
+            )}
+          </>        
         ) : field.type === 'location' ? ( // If Location
           <Box key={field.name} className="mb-4">
             <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+            
             {/* Request Location */}
             <HapticButton
               className="flex-1 p-5 rounded-lg items-center"
@@ -211,12 +314,14 @@ export default function FormBase({
                 Request Location
               </Text>
             </HapticButton>
+
             {location && (
                 // Location Container
                 <Box
                   className="mt-3 p-4 rounded-lg"
                   style={{ backgroundColor: colours.card, borderColor: colours.border, borderWidth: 1 }}
                 >
+
                   <Text className="mb-3 text-sm font-semibold" style={{ color: colours.text }}>
                     CURRENT LOCATION
                   </Text>
@@ -242,7 +347,8 @@ export default function FormBase({
                 </Box>
               )}
           </Box>
-        ) : ( // Else if Text or Multiline render TextInput
+        
+      ) : ( // Else if Text or Multiline render TextInput
           <Box key={field.name} className="mb-4">
             <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
             <TextInput

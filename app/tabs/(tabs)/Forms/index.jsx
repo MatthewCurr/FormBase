@@ -3,14 +3,14 @@
 // ================================
 // React & React Native Imports
 // ================================
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Alert, TouchableOpacity } from 'react-native';
 
 // ================================
 // Navigation and Theme Imports
 // ================================
 import { useRouter } from 'expo-router';
-import { useTheme } from '@react-navigation/native';
+import { useTheme, useFocusEffect } from '@react-navigation/native';
 
 // ================================
 // UI Component Imports
@@ -60,10 +60,11 @@ export default function FormListScreen() {
   // Use Effects
   // ===================
 
-  useEffect(() => {
-    // Fetch forms on component mount.
-    fetchForms();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchForms(); // fetch whenever screen is focused.
+    }, [])
+  );
 
   /**
    * Fetches all forms from the server and updates state.

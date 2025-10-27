@@ -22,12 +22,12 @@ export default function RecordItem({ item, colours }) {
     >
       <Text 
         style={{ color: colours.text, fontWeight: '600', 
-                  flex:1, flexWrap: 'wrap' }}
+                  flexWrap: 'wrap' }}
       >
         {item.key}:
       </Text>
       <Text 
-        style={{ color: colours.text, flexShrink: 1 }}
+        style={{ color: colours.text, flexWrap: 'wrap', flex: 1, textAlign: 'right' }}
       >
         {typeof item.value === 'object' ?
           `Lat: ${item.value.latitude.toFixed(6)}° | Lon: ${item.value.longitude.toFixed(6)}°` :

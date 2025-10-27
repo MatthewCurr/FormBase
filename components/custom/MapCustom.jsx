@@ -5,7 +5,7 @@
 // ================================
 
 import MapView, { Marker, Callout } from 'react-native-maps';
-import { Text } from 'react-native';
+import { Text, Image } from 'react-native';
 
 // ================================
 // UI Component Imports
@@ -32,6 +32,15 @@ export default function MapCustom({records}) {
           const recordValues = Object.entries(record.values)
             .filter(([key, value]) => value !== locationRecord)
 
+          // Check if value is an image URI
+          const isImage = (value) => { 
+            return (
+              value && typeof value === 'string' &&
+              (value.startsWith('file://') &&
+              (value.endsWith('.jpg') || value.endsWith('.png') || value.endsWith('.jpeg')))
+            );
+          }
+
           if (locationRecord) {
             return (
               <Marker
@@ -50,9 +59,16 @@ export default function MapCustom({records}) {
                         <Text className="font-semibold mb-1">
                           {key}:
                         </Text>
-                        <Text>
-                          {typeof value === 'object' ? JSON.stringify(value) : value}
-                        </Text>
+                        {isImage(value) ? (
+                          <Image
+                            source={{ uri: value }}
+                            style={{ width: '100%', height: 100, borderRadius: 8 }}
+                          />
+                        ) : (
+                          <Text>
+                            {typeof value === 'object' ? JSON.stringify(value) : value}
+                          </Text>
+                        )}
                       </Box>
                     ))}
                   </Box>

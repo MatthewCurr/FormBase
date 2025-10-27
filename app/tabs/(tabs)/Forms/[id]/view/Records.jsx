@@ -70,10 +70,12 @@ export default function FormListScreen() {
   // Use Effects
   // ===================
 
-  useEffect(() => {
-    // Fetch records on record length update.
-    fetchRecords();
-  }, [records.length])
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch fields on component focus.
+      fetchRecords();
+    }, [id])
+  );
 
   /**
    * Fetches all records from the server and updates state.
@@ -84,7 +86,7 @@ export default function FormListScreen() {
       setLoading(true);
 
       // Fetch and Set Records
-      const records = await getRecords();
+      const records = await getRecords(id);
       setRecords(records);
 
       // Fetch and Set Form Name

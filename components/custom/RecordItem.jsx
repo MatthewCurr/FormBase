@@ -17,14 +17,22 @@ export default function RecordItem({ item, colours }) {
 
   return (
     <Box
-      className="flex-row gap-1"
-      style={{  }}
+      className="flex-row gap-1 mb-1"
+      style={{ flexWrap: 'wrap' }}
     >
-      <Text style={{ color: colours.text, fontWeight: '600' }}>
+      <Text 
+        style={{ color: colours.text, fontWeight: '600', 
+                  flex:1, flexWrap: 'wrap' }}
+      >
         {item.key}:
       </Text>
-      <Text style={{ color: colours.text }}>
-        {item.value}
+      <Text 
+        style={{ color: colours.text, flexShrink: 1 }}
+      >
+        {typeof item.value === 'object' ?
+          `Lat: ${item.value.latitude.toFixed(6)}° | Lon: ${item.value.longitude.toFixed(6)}°` :
+          item.value
+        }
       </Text>
     </Box>
   );

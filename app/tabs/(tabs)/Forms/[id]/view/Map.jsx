@@ -25,7 +25,7 @@ import MapCustom from '@/components/custom/MapCustom'
 // ================================
 // Haptics & API Imports
 // ================================
-import { getFields } from '@/restapi';
+import { getRecords } from '@/restapi';
 
 export default function FormMap() {
   
@@ -36,7 +36,7 @@ export default function FormMap() {
   // ===================
 
   // List of fields from API
-  const [fields, setFields] = useState([]);
+  const [records, setRecords] = useState([]);
 
   const [formData, setFormData] = useState({});
 
@@ -50,60 +50,53 @@ export default function FormMap() {
 
   useFocusEffect(
     useCallback(() => {
-      // Fetch fields on component focus.
-      fetchFields();
+      // Fetch records on component focus.
+      fetchRecords();
     }, [id])
   );
 
   /**
-   * Fetches all fields from the server and updates state.
+   * Fetches records for given id from the server and updates state.
    * Handles loading state and potential fetch errors.
    */
-  const fetchFields = async () => {
+  const fetchRecords = async () => {
     try {
       setLoading(true);
-      const fields = await getFields(id);
+      // Fetch all records from api.
+      const records = await getRecords(id);
 
-      // Map Fetched Fields to Form Data Structure
-      const formFields = mapFetchedToForm(fields)
-      // Set Fields for use in rendering.
-      setFields(formFields);
+      const locationRecords = records.filter(record => {
+        return Object.values(record.values).some(value => {
+          return typeof value === 'object' && value !== null &&
+                'latitude' in value && 'longitude' in value;
+        });
+      });
+
+      console.log(locationRecords);
+
+      // Set Records for use in rendering.
+      setRecords(locationRecords);
+
     } catch (err) {
-      console.error('Error fetching fields:', err);
-      setError('Failed to load fields.');
+      console.error('Error fetching records:', err);
+      setError('Failed to load records.');
       setLoading(false);
     } finally {
       setLoading(false);  
     }
   };
 
-  function mapFetchedToForm(fields) {
-    return fields.map((f) => ({
-      name: f.name,
-      label: f.name,
-      placeholder: `Enter ${f.name}`,
-      required: f.required,
-      multiline: f.field_type.toLowerCase() === "multiline" ? true : false,
-      is_num: f.is_num,
-      type: f.field_type.toLowerCase(),
-      options: f.options
-    }));
-  }
-
-  // Check if any field is a location
-  const hasLocationField = fields.some((f) => f.type?.toLowerCase() === 'location');
-
   return (
     <Box style={{ padding: 20 }}>
       
       {loading ? (
-        <Text>Loading fields...</Text>
+        <Text>Loading map...</Text>
       ) : error ? (
         <Text>{error}</Text>
-      ) : hasLocationField ? (
-        <MapCustom field={fields.find((f) => f.type?.toLowerCase() === 'location')} />
+      ) : records ? (
+        <MapCustom records={records} />
       ) : (
-        <Text>This Form does not have any map fields</Text>
+        <Text>This Form does not have any records with locations.</Text>
       )}
 
     </Box>

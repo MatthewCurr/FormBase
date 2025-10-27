@@ -31,8 +31,6 @@ export default function MapCustom({records}) {
 
           const recordValues = Object.entries(record.values)
             .filter(([key, value]) => value !== locationRecord)
-            .map(([key, value]) => `${key}: ${typeof value === 'object' ? JSON.stringify(value) : value}`)
-            .join('\n');
 
           if (locationRecord) {
             return (
@@ -46,7 +44,17 @@ export default function MapCustom({records}) {
                 <Callout>
                   <Box className="p-2" style={{ maxWidth: 200 }}>
                     <Text className="font-bold mb-1">Record ID: {record.id}</Text>
-                    <Text>{recordValues}</Text>
+                    {/* Map record values */}
+                    {recordValues.map(([key, value]) => (
+                      <Box key={`${key}-${value}`}>
+                        <Text className="font-semibold mb-1">
+                          {key}:
+                        </Text>
+                        <Text>
+                          {typeof value === 'object' ? JSON.stringify(value) : value}
+                        </Text>
+                      </Box>
+                    ))}
                   </Box>
                 </Callout>
               </Marker>

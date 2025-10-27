@@ -2,11 +2,17 @@
 // React & React Native Imports
 // ================================
 
+import { useState } from 'react';
 import {  Alert, View, Text, TextInput, FlatList,
           TouchableOpacity, useColorScheme } from 'react-native';
 
-import DropDownPicker from 'react-native-dropdown-picker'
-import { useState } from 'react'
+import DropDownPicker from 'react-native-dropdown-picker';
+import MapView from 'react-native-maps';
+
+// ================================
+// Location Imports
+// ================================
+import * as Location from 'expo-location';
 
 // ================================
 // Navigation and Theme Imports
@@ -23,8 +29,13 @@ import { Center } from '@/components/ui/center';
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
 
-import PlusIcon from '@/assets/icons/Plus'; // Optional icon for submit
+import PlusIcon from '@/assets/icons/Plus'; // Submit Icon
 import Fontisto from '@expo/vector-icons/Fontisto';
+
+// ================================
+// Custom Component Imports
+// ================================
+import HapticButton from '@/components/custom/HapticButton'
 
 // ================================
 // Haptics Imports
@@ -78,7 +89,11 @@ export default function FormBase({
   const colorScheme = useColorScheme(); // 'dark' or 'light'
   const colours = useTheme().colors;
 
+  // Dropdown State 
   const [openDropdown, setOpenDropdown] = useState(null);
+
+  // Location State
+  const [location, setLocation] = useState(null);
 
   /**
    * Handle input change event and update form state.
@@ -96,6 +111,13 @@ export default function FormBase({
     const missingFields = fields
       .filter(field => field.required) // Only check for required fields
       .filter(field => {
+
+        // Check for location fields (objects with latitude/longitude)
+        if (field.type === 'location') {
+          return !formData[field.name]?.latitude || !formData[field.name]?.longitude;
+        }
+
+        // Else check for normal text fields
         return !formData[field.name]?.trim()
       });
 
@@ -111,7 +133,33 @@ export default function FormBase({
     onSubmit();
   }
 
-  
+  const requestLocation = (field) => {
+
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setLocation('Permission to access location was denied');
+
+        Alert.alert('Location Error', 'Permission to access location was denied');
+        
+        return;
+      }
+
+      let loc = await Location.getCurrentPositionAsync({});
+      setLocation(loc.coords);
+
+      setFormData({ ...formData, 
+        [field.name]: {
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude
+        }
+      });
+
+      Alert.alert('Location Retrieved', `\nLatitude: ${loc.coords.latitude}, Longitude: ${loc.coords.longitude}`);
+      
+    })();
+  };
+
   const renderField = ({ item: field}) => {
 
     // Check if options is an array
@@ -121,7 +169,7 @@ export default function FormBase({
       <Box key={field.name} className="">
         {field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
           <Box key={field.name} className="mb-4">
-            <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
+            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
             <DropDownPicker
               open={openDropdown === field.name}
               value={formData[field.name]}
@@ -148,15 +196,55 @@ export default function FormBase({
               
             />
           </Box>
-        ) : field.type === 'map' ? ( // If Map
+        ) : field.type === 'image' ? ( // If Image Picker
+          <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+        ) : field.type === 'location' ? ( // If Location
           <Box key={field.name} className="mb-4">
-            <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
-            
-            <Text>MAP</Text>
+            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+            {/* Request Location */}
+            <HapticButton
+              className="flex-1 p-5 rounded-lg items-center"
+              style={{ backgroundColor: colours.primary }}
+              onPress={() => requestLocation(field)}
+            >
+              <Text style={{ color: '#fff' }} className="font-semibold">
+                Request Location
+              </Text>
+            </HapticButton>
+            {location && (
+                // Location Container
+                <Box
+                  className="mt-3 p-4 rounded-lg"
+                  style={{ backgroundColor: colours.card, borderColor: colours.border, borderWidth: 1 }}
+                >
+                  <Text className="mb-3 text-sm font-semibold" style={{ color: colours.text }}>
+                    CURRENT LOCATION
+                  </Text>
+
+                  {/* Latitude and Longitude  */}
+                  <Box className="flex-row items-center justify-between mb-2">
+                    <Text className="text-sm" style={{ color: colours.text, opacity: 0.8 }}>
+                      Latitude
+                    </Text>
+                    <Text className="text-base font-semibold" style={{ color: colours.text }}>
+                      {location.latitude.toFixed(6)}°
+                    </Text>
+                  </Box>
+                  <Box className="flex-row items-center justify-between">
+                    <Text className="text-sm" style={{ color: colours.text, opacity: 0.8 }}>
+                      Longitude
+                    </Text>
+                    <Text className="text-base font-semibold" style={{ color: colours.text }}>
+                      {location.longitude.toFixed(6)}°
+                    </Text>
+                  </Box>
+
+                </Box>
+              )}
           </Box>
         ) : ( // Else if Text or Multiline render TextInput
           <Box key={field.name} className="mb-4">
-            <Text className="text-base mb-1 font-semibold dark:text-white">{field.label}</Text>
+            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
             <TextInput
               value={formData[field.name]}
               onChangeText={(value) => handleChange(field.name, value)}
@@ -199,7 +287,7 @@ export default function FormBase({
           </Box>
         </TouchableOpacity>
 
-        <Heading className="text-xl mb-2">
+        <Heading className="text-xl mb-2" style={{ color: colours.text }}>
           {isEditing ? title[1] : title[0]}
         </Heading>
       </Center>

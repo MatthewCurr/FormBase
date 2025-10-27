@@ -222,6 +222,18 @@ export async function getRecords(form_id) {
 }
 
 /**
+ * Function to list all records associated with the given form id, with given parameter.
+ * 
+ * @param {string} form_id - The ID of the form to retrieve records from.
+ * @param {string} fieldName - The field name to filter location records.
+ * @returns {Promise<Array>} - An array of field objects.
+ */
+export async function getLocationRecords(form_id, fieldName) {
+  if (form_id)
+    return apiRequest(`/record?form_id=eq.${form_id}&values->${fieldName}->>'latitude'=not.is.null'`);
+}
+
+/**
  * Function to get a single record by its ID.
  * 
  * @param {string} id - The ID of the record to retrieve.

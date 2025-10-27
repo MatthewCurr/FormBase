@@ -121,7 +121,6 @@ export default function AddRecord() {
       };
 
       // Create the Field Data in the API
-      console.log('Form Data is', payload);
       await createRecord(payload);
 
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -155,7 +154,7 @@ export default function AddRecord() {
             style={{ backgroundColor: colours.primary }}
             onPress={() => handleEditPress()}
           >
-            <Text style={{ color: '#fff' }} className="text-xl font-semibold">
+            <Text style={{ color: colours.text }} className="text-xl font-semibold">
               Add Fields
             </Text>
           </HapticButton>

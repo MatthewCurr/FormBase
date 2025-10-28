@@ -29,12 +29,13 @@ import { Heading } from '@/components/ui/heading'
 // ================================
 import RecordDisplay from '@/components/custom/RecordDisplay';
 import HapticButton from '@/components/custom/HapticButton'
+import RecordFilter from '@/components/custom/RecordFilter';
 
 // ================================
 // Haptics & API Imports
 // ================================
 import * as Haptics from 'expo-haptics';
-import { getRecords, deleteRecord, getForm } from '@/restapi';
+import { getRecords, deleteRecord, getForm, getFields } from '@/restapi';
 
 
 // Main Forms List Screen Component
@@ -55,6 +56,9 @@ export default function FormListScreen() {
 
   // List of records from API
   const [records, setRecords] = useState([]);
+
+  // List of form fields
+  const [fields, setFields] = useState([]);
 
   // Store Form Name for display
   const [formName, setFormName] = useState('');
@@ -91,6 +95,10 @@ export default function FormListScreen() {
       // Fetch and Set Records
       const records = await getRecords(id);
       setRecords(records);
+
+      // Fetch and Set Fields
+      const fields = await getFields(id);
+      setFields(fields);
 
       // Fetch and Set Form Name
       const form = await getForm(id);
@@ -156,6 +164,32 @@ export default function FormListScreen() {
     }
   };
 
+  const handleApplyFilters = async (appliedFilters, logicOperator) => {
+    try {
+      setLoading(true);
+
+      // Applied Filters: {"1": {"operator": "equals", "value": "Test"}, "4": {"operator": "gt", "value": "Osjffe"}}
+
+      // Fetch and Set Records
+      const records = await getRecords(id);
+      setRecords(records);
+
+    } catch (err) {
+      console.error('Error fetching records:', err);
+      setError('Failed to load filtered records.');
+      setLoading(false);
+    } finally {
+      setLoading(false);  
+      // setFilterMenuOpen(false);
+    }
+  };
+
+
+  const handleClearFilters = () => {
+    fetchRecords();
+    setFilterMenuOpen(false);
+  };
+
   // ===================
   // UI Rendering
   // ===================
@@ -183,18 +217,25 @@ export default function FormListScreen() {
             {/* Filter Menu */}
             {filterMenuOpen && (
               <Box className="w-full bg-transparent mt-4 p-4 border rounded-lg" style={{ borderColor: colours.primary }}>
-                <Text className="text-lg font-semibold mb-2" style={{ color: colours.text }}>Filter Records</Text>
-                <Text className="mb-4" style={{ color: colours.text, opacity: 0.8 }}>
-                  (Filter functionality coming soon!)
-                </Text>
+                {/* Title */}
+                <Heading className="mb-4" style={{ color: colours.text }}>Filter Records</Heading>
+
+                {/* Main Filter Section */}
+                <RecordFilter colours={colours} fields={fields} onApplyFilter={handleApplyFilters} onClearFilter={handleClearFilters} />
+
+                {/* Close Filter Menu Button */}
                 <HapticButton
                   className="px-4 py-2 rounded-full"
-                  style={{ backgroundColor: colours.primary }}
+                  style={{ 
+                    backgroundColor: 'transparent', 
+                    borderColor: colours.primary, 
+                    borderWidth: 2 
+                  }}
                   onPress={() => {
                     setFilterMenuOpen(false);
                   }}
                 >
-                  <Text className="text-white font-semibold">Close Filter Menu</Text>
+                  <Text className="font-semibold" style={{ color: colours.text }}>Close Filter Menu</Text>
                 </HapticButton>
               </Box>
             )}

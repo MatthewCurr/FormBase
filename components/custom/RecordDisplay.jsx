@@ -17,8 +17,6 @@ import RecordItem from '@/components/custom/RecordItem'
  */
 export default function RecordDisplay({ record, colours, children }) {
 
-  console.log(`Record is`, record)
-
   return (
     <Box
       className="mx-2 mb-4 p-4 rounded-xl"

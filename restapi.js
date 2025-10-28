@@ -37,11 +37,12 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
     options.body = JSON.stringify({ ...body, username: USERNAME });
   }
 
-  console.log('📡 Fetching:', endpoint);
-  console.log('🧾 Options:', options);
+  console.log('Fetching:', endpoint);
 
   // Make the API request and check if the response is OK
   const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+
+  console.log(`${API_BASE_URL}${endpoint}`, options)
   
   if (!response.ok) {
     throw new Error(`HTTP error! status: ${response.status}`);
@@ -222,6 +223,41 @@ export async function getRecords(form_id) {
 }
 
 /**
+ * Function to list all records associated with the given form id and filters.
+ * 
+ * @param {string} form_id - The ID of the form to retrieve records from.
+ * @param {Array} filters - Array of filter objects { field, operator, value }.
+ * @param {string} logic - Logic operator to combine filters ('AND' or 'OR').
+ * @returns {Promise<Array>} - An array of field objects.
+ */
+export async function getFilteredRecords(form_id, filters, logic) {
+
+  // Build filter strings for JSONB fields
+  // %22 Output is URL encoded double quote ("), Allowing field names with spaces at end, "Example "
+  const filterStrings = filters.map(f => {
+    if (f.operator === 'contains') { // LIKE
+      return `values->>${(f.field)}.ilike.*${(f.value)}*`;
+    } else if (f.operator === 'starts') { // startsWith
+      return `values->>${(f.field)}.ilike.${(f.value)}*`;
+    } else { // eq, gt, lt, gte, lte
+      return `values->>${(f.field)}.${f.operator}.${(f.value)}`;
+    }
+  });
+
+  // Combine with logic operator
+  const logicStr = `${logic.toLowerCase()}=(${filterStrings.join(',')})`;
+
+  // Combine with form_id
+  const url = `/record?form_id=eq.${form_id}&${logicStr}`;
+
+  console.log("Filtered Records URL:", url);
+
+  return apiRequest(url);
+}
+
+// "http://localhost:3000/people?or=(age.lt.18,age.gt.21)"
+
+/**
  * Function to list all records associated with the given form id, with given parameter.
  * 
  * @param {string} form_id - The ID of the form to retrieve records from.
@@ -230,6 +266,7 @@ export async function getRecords(form_id) {
  */
 export async function getLocationRecords(form_id, fieldName) {
   if (form_id)
+    console.log("URL Is ", `/record?form_id=eq.${form_id}&values->${fieldName}->>'latitude'=not.is.null'`);
     return apiRequest(`/record?form_id=eq.${form_id}&values->${fieldName}->>'latitude'=not.is.null'`);
 }
 

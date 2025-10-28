@@ -41,8 +41,16 @@ export default function AddForm() {
       const existingFields = await getFields(id);
       const order_index = (existingFields?.length || 0) + 1;
 
+      // Clean the 'name' value in formData
+      const cleanedFormData = {
+        ...formData,
+        name: typeof formData.name === 'string' ? formData.name.trimEnd() : formData.name
+      };
+
+      console.log('Cleaned Form Data:', cleanedFormData);
+
       // Add order_index into the API payload
-      const payload = { ...formData, order_index, form_id: id };
+      const payload = { ...cleanedFormData, order_index, form_id: id };
 
       // Create the Field Data in the API
       await createField(payload);

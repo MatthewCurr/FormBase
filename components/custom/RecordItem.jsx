@@ -34,7 +34,7 @@ export default function RecordItem({ item, colours }) {
 
   return (
     <Box
-      className="flex-col gap-1 mb-1"
+      className="flex-col gap-1 mb-4"
       style={{ flexWrap: 'wrap' }}
     >
       {/* Key Name */}

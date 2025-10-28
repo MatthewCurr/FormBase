@@ -35,7 +35,8 @@ import RecordFilter from '@/components/custom/RecordFilter';
 // Haptics & API Imports
 // ================================
 import * as Haptics from 'expo-haptics';
-import { getRecords, deleteRecord, getForm, getFields } from '@/restapi';
+import { getRecords, getFilteredRecords, deleteRecord, 
+          getForm, getFields } from '@/restapi';
 
 
 // Main Forms List Screen Component
@@ -171,7 +172,9 @@ export default function FormListScreen() {
       // Applied Filters: {"1": {"operator": "equals", "value": "Test"}, "4": {"operator": "gt", "value": "Osjffe"}}
 
       // Fetch and Set Records
-      const records = await getRecords(id);
+      const records = await getFilteredRecords(id, appliedFilters, logicOperator);
+      
+      console.log("Retrieved Filtered Records:", records);
       setRecords(records);
 
     } catch (err) {

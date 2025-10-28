@@ -59,6 +59,9 @@ export default function FormListScreen() {
   // Store Form Name for display
   const [formName, setFormName] = useState('');
 
+  // Filter Menu
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+
   // Loading and Error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -176,6 +179,38 @@ export default function FormListScreen() {
             <Heading>Records for {formName}</Heading>
 
             <Text>Showing {records.length} records...</Text>
+
+            {/* Filter Menu */}
+            {filterMenuOpen && (
+              <Box className="w-full bg-transparent mt-4 p-4 border rounded-lg" style={{ borderColor: colours.primary }}>
+                <Text className="text-lg font-semibold mb-2" style={{ color: colours.text }}>Filter Records</Text>
+                <Text className="mb-4" style={{ color: colours.text, opacity: 0.8 }}>
+                  (Filter functionality coming soon!)
+                </Text>
+                <HapticButton
+                  className="px-4 py-2 rounded-full"
+                  style={{ backgroundColor: colours.primary }}
+                  onPress={() => {
+                    setFilterMenuOpen(false);
+                  }}
+                >
+                  <Text className="text-white font-semibold">Close Filter Menu</Text>
+                </HapticButton>
+              </Box>
+            )}
+
+            {/* Filter Records Button */}
+            {!filterMenuOpen && (
+              <HapticButton
+                className="mt-4 px-5 py-3 rounded-full"
+                style={{ backgroundColor: colours.primary }}
+                onPress={() => {
+                  setFilterMenuOpen(true);
+                }}
+              >
+                <Text className="text-white font-semibold">Filter Records</Text>
+              </HapticButton>
+            )}
           </Center>
 
           {/* Render record display list */}

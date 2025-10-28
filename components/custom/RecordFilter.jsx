@@ -63,7 +63,7 @@ export default function RecordFilter({
   // State Variables
   // ===================
 
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState([]); // Array of filter objects
   
   const [fieldDropdownOpen, setFieldDropdownOpen] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
@@ -78,9 +78,9 @@ export default function RecordFilter({
 
   // String filter options
   const stringOptions = [
-    { label: 'Equals', value: 'equals' },
+    { label: 'Equals', value: 'eq' },
     { label: 'Contains (LIKE)', value: 'contains' },
-    { label: 'Starts With', value: 'startsWith' },
+    { label: 'Starts With', value: 'starts' },
   ];
 
   // Numeric filter options
@@ -97,11 +97,11 @@ export default function RecordFilter({
 
   const dropdownItems = filteredFields.map(f => ({
     label: f.name,
-    value: f.order_index
+    value: f.name,
   }));
 
   // Find the currently selected field object
-  const selectedFieldObj = filteredFields.find(f => f.order_index === selectedField);
+  const selectedFieldObj = filteredFields.find(f => f.name === selectedField);
 
   // Decide which operator list to use
   const operatorOptions = selectedFieldObj?.is_num ? numericOptions : stringOptions;
@@ -113,7 +113,7 @@ export default function RecordFilter({
   useEffect(() => {
     // Reset filters when the page id changes
     if (id) {
-      setFilters({});
+      setFilters([]);
     }
   }, [id]);
 
@@ -124,10 +124,15 @@ export default function RecordFilter({
   // Handle adding a new filter
   const handleAddFilter = () => {
     if (selectedField && operator && inputValue) {
-      setFilters({
+      setFilters([
         ...filters,
-        [selectedField]: { operator, value: inputValue }
-      });
+        {
+          field: selectedField,
+          operator: operator,
+          value: inputValue
+        }
+      ]);
+
       setSelectedField(null);
       setOperator(null);
       setInputValue('');
@@ -149,7 +154,7 @@ export default function RecordFilter({
 
   // Handle clearing filters
   const handleClearFilters = () => {
-    setFilters({});
+    setFilters([]);
     onClearFilter();
   }
 
@@ -237,7 +242,7 @@ export default function RecordFilter({
       </HapticButton>
 
       {/* Logical Operator Selection */}
-      {Object.keys(filters).length > 0 && (
+      {filters.length > 0 && (
         <Box className="z-0 flex-row items-center gap-2 mb-4 justify-between">
           <Text style={{ color: colours.text }}>Combine Filters With:</Text>
           <DropDownPicker
@@ -268,11 +273,11 @@ export default function RecordFilter({
       {/* Current Filters */}
       <Box className="mb-4">
         <Text style={{ color: colours.text, marginBottom: 8 }}>Current Filters:</Text>
-        {Object.keys(filters).length === 0 ? (
+        {filters.length === 0 ? (
           <Text style={{ color: colours.text, opacity: 0.6 }}>No filters applied.</Text>
         ) : (
-          Object.entries(filters).map(([fieldIndex, filter], idx) => {
-            const field = filteredFields.find(f => f.order_index.toString() === fieldIndex);
+          filters.map((filter, idx) => {
+            const field = filteredFields.find(f => f.name === filter.field);
             return (
               <Box key={idx} className="flex-row justify-between mb-2 p-2 rounded-lg" style={{ backgroundColor: colours.card }}>
                 <Text
@@ -295,18 +300,16 @@ export default function RecordFilter({
       </Box>
 
       {/* Clear Filter Button */}
-      {Object.keys(filters).length > 0 && (
-        <HapticButton
-          className="w-full p-4 rounded-full mb-2"
-          style={{ backgroundColor: colours.primary, alignSelf: 'flex-start' }}
-          onPress={handleClearFilters}
-        >
-          <Text className="text-white font-semibold">Clear Filters</Text>
-        </HapticButton>
-      )}
+      <HapticButton
+        className="w-full p-4 rounded-full mb-2"
+        style={{ backgroundColor: colours.primary, alignSelf: 'flex-start' }}
+        onPress={handleClearFilters}
+      >
+        <Text className="text-white font-semibold">Clear Filters</Text>
+      </HapticButton>
 
       {/* Apply Filter Button */}
-      {Object.keys(filters).length > 0 && (
+      {filters.length > 0 && (
         <HapticButton
           className="w-full p-4 rounded-full"
           style={{ backgroundColor: colours.primary, alignSelf: 'flex-start' }}

@@ -157,18 +157,30 @@ export default function FormBase({
 
     // Check for invalid characters in fields
     const invalidFields = Object.entries(formData).filter(([key, value]) => {
-      console.log('Checking value for field', key, ':', value);
+      
+      // Get the field for this key
+      const field = fields.find(f => f.name === key);
+
+      // Skip if field is location or image
+      if (!field || field.type === 'location' || field.type === 'image') {
+        return false;
+      }
+
       return typeof value === 'string' && /[^a-zA-Z0-9_ ]/.test(value);
     });
 
     if (invalidFields.length > 0) {
-      const fieldNames = invalidFields.map(([key]) => key).join(', ');
       Alert.alert(
         'Invalid Field Name',
         `The entered Field Name is invalid. Only letters, numbers, and underscores are allowed.`
       );
+
       return; // stop submission
     }
+
+    // Reset Location and Image Data if present.
+    setPhotoState({});
+    setLocation(null);
 
     // Call onSubmit Callback passed in component.
     onSubmit();
@@ -273,7 +285,13 @@ export default function FormBase({
         
         {field.type === 'dropdown' && field.options ? ( // Render Picker for Dropdown
           <Box key={field.name} className="mb-4">
-            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+            <Box className="flex flex-row">
+              <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+              {field.required && (
+                <Text style={{ color: colours.text }}>*</Text>
+              )}
+            </Box>
+
             <DropDownPicker
               open={openDropdown === field.name}
               value={formData[field.name]}
@@ -302,7 +320,12 @@ export default function FormBase({
 
         ) : field.type === 'image' ? ( // If Image Picker
           <>
-            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+            <Box className="flex flex-row">
+              <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+              {field.required && (
+                <Text style={{ color: colours.text }}>*</Text>
+              )}
+            </Box>
 
             {/* Photo Component to display image */}
             <Photo 
@@ -351,7 +374,12 @@ export default function FormBase({
           </>        
         ) : field.type === 'location' ? ( // If Location
           <Box key={field.name} className="mb-4">
-            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+            <Box className="flex flex-row">
+              <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+              {field.required && (
+                <Text style={{ color: colours.text }}>*</Text>
+              )}
+            </Box>
             
             {/* Request Location */}
             <HapticButton
@@ -399,7 +427,12 @@ export default function FormBase({
         
       ) : ( // Else if Text or Multiline render TextInput
           <Box key={field.name} className="mb-4">
-            <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+            <Box className="flex flex-row">
+              <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
+              {field.required && (
+                <Text style={{ color: colours.text }}>*</Text>
+              )}
+            </Box>
             <TextInput
               value={formData[field.name] ?? ''}
               onChangeText={(value) => handleChange(field.name, field.is_num, value)}

@@ -155,6 +155,21 @@ export default function FormBase({
       return;
     }
 
+    // Check for invalid characters in fields
+    const invalidFields = Object.entries(formData).filter(([key, value]) => {
+      console.log('Checking value for field', key, ':', value);
+      return typeof value === 'string' && /[^a-zA-Z0-9_ ]/.test(value);
+    });
+
+    if (invalidFields.length > 0) {
+      const fieldNames = invalidFields.map(([key]) => key).join(', ');
+      Alert.alert(
+        'Invalid Field Name',
+        `The entered Field Name is invalid. Only letters, numbers, and underscores are allowed.`
+      );
+      return; // stop submission
+    }
+
     // Call onSubmit Callback passed in component.
     onSubmit();
   }

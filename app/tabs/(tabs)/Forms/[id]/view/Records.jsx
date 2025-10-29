@@ -67,6 +67,10 @@ export default function FormListScreen() {
   // Filter Menu
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
 
+  // Filter State
+  const [currentFilters, setCurrentFilters] = useState([]); // Array of filter objects
+  const [logicOperator, setLogicOperator] = useState('AND'); // Default logic operator
+
   // Loading and Error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -84,6 +88,13 @@ export default function FormListScreen() {
       fetchRecords();
     }, [id])
   );
+
+  useEffect(() => {
+    // Reset filters when the page id changes
+    if (id) {
+      setCurrentFilters([]);
+    }
+  }, [id]);
 
   /**
    * Fetches all records from the server and updates state.
@@ -174,7 +185,6 @@ export default function FormListScreen() {
       // Fetch and Set Records
       const records = await getFilteredRecords(id, appliedFilters, logicOperator);
       
-      console.log("Retrieved Filtered Records:", records);
       setRecords(records);
 
     } catch (err) {
@@ -199,65 +209,71 @@ export default function FormListScreen() {
   return (
     <Box className="flex-1">
     
-      {/* Show message if no forms exist */}
-      {records.length === 0 ? (
-        <Center className="flex-1 px-4 mt-8">
-          <Text 
-            className="text-lg text-center"
-            style={{ color: colours.text, opacity: 0.6 }}
-          >
-            No records yet. Created records will appear here!
-          </Text>
-        </Center>
-      ) : (
-        <Box className="flex-1 px-4 pt-4">
-          {/* Form Name and Number of Records */}
-          <Center className="m-4">
-            <Heading>Records for {formName}</Heading>
+      <Box className="flex-1 px-4 pt-4">
+        {/* Form Name and Number of Records */}
+        <Center className="m-4">
+          <Heading>Records for {formName}</Heading>
 
-            <Text>Showing {records.length} records...</Text>
+          <Text>Showing {records.length} records...</Text>
 
-            {/* Filter Menu */}
-            {filterMenuOpen && (
-              <Box className="w-full bg-transparent mt-4 p-4 border rounded-lg" style={{ borderColor: colours.primary }}>
-                {/* Title */}
-                <Heading className="mb-4" style={{ color: colours.text }}>Filter Records</Heading>
+          {/* Filter Menu */}
+          {filterMenuOpen && (
+            <Box className="w-full bg-transparent mt-4 p-4 border rounded-lg" style={{ borderColor: colours.primary }}>
+              {/* Title */}
+              <Heading className="mb-4" style={{ color: colours.text }}>Filter Records</Heading>
 
-                {/* Main Filter Section */}
-                <RecordFilter colours={colours} fields={fields} onApplyFilter={handleApplyFilters} onClearFilter={handleClearFilters} />
+              {/* Main Filter Section */}
+              <RecordFilter 
+                colours={colours} 
+                fields={fields} 
+                filters={currentFilters} 
+                setFilters={setCurrentFilters} 
+                logicOperator={logicOperator}
+                setLogicOperator={setLogicOperator}
+                onApplyFilter={handleApplyFilters} 
+                onClearFilter={handleClearFilters} />
 
-                {/* Close Filter Menu Button */}
-                <HapticButton
-                  className="px-4 py-2 rounded-full"
-                  style={{ 
-                    backgroundColor: 'transparent', 
-                    borderColor: colours.primary, 
-                    borderWidth: 2 
-                  }}
-                  onPress={() => {
-                    setFilterMenuOpen(false);
-                  }}
-                >
-                  <Text className="font-semibold" style={{ color: colours.text }}>Close Filter Menu</Text>
-                </HapticButton>
-              </Box>
-            )}
-
-            {/* Filter Records Button */}
-            {!filterMenuOpen && (
+              {/* Close Filter Menu Button */}
               <HapticButton
-                className="mt-4 px-5 py-3 rounded-full"
-                style={{ backgroundColor: colours.primary }}
+                className="px-4 py-2 rounded-full"
+                style={{ 
+                  backgroundColor: 'transparent', 
+                  borderColor: colours.primary, 
+                  borderWidth: 2 
+                }}
                 onPress={() => {
-                  setFilterMenuOpen(true);
+                  setFilterMenuOpen(false);
                 }}
               >
-                <Text className="text-white font-semibold">Filter Records</Text>
+                <Text className="font-semibold" style={{ color: colours.text }}>Close Filter Menu</Text>
               </HapticButton>
-            )}
-          </Center>
+            </Box>
+          )}
 
-          {/* Render record display list */}
+          {/* Filter Records Button */}
+          {!filterMenuOpen && (
+            <HapticButton
+              className="mt-4 px-5 py-3 rounded-full"
+              style={{ backgroundColor: colours.primary }}
+              onPress={() => {
+                setFilterMenuOpen(true);
+              }}
+            >
+              <Text className="text-white font-semibold">Filter Records</Text>
+            </HapticButton>
+          )}
+        </Center>
+
+        {/* Show message if no forms exist */}
+        {records.length === 0 ? (
+          <Center className="flex-1">
+            <Text className="text-lg text-center" style={{ color: colours.text, opacity: 0.6 }}>
+              No records yet. Created records will appear here!
+            </Text>
+          </Center>
+        ) : (
+
+          // Render record display list
           <FlatList
             data={records}
             renderItem={({ item }) => (
@@ -290,8 +306,8 @@ export default function FormListScreen() {
             )}
             keyExtractor={(item, index) => `${item.form_id}-${index}`} // Each Record has unique ID
           />
-        </Box>
-      )}
+        )}
+      </Box>
     </Box>
   );
 }

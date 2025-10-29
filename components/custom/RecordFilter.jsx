@@ -53,6 +53,10 @@ import * as Haptics from 'expo-haptics';
 export default function RecordFilter({ 
   colours,
   fields,
+  filters, 
+  setFilters, 
+  logicOperator, 
+  setLogicOperator,
   onApplyFilter,
   onClearFilter
 }) {
@@ -63,7 +67,7 @@ export default function RecordFilter({
   // State Variables
   // ===================
 
-  const [filters, setFilters] = useState([]); // Array of filter objects
+  // const [filters, setFilters] = useState([]); // Array of filter objects
   
   const [fieldDropdownOpen, setFieldDropdownOpen] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
@@ -73,7 +77,6 @@ export default function RecordFilter({
 
   const [inputValue, setInputValue] = useState(''); 
 
-  const [logicOperator, setLogicOperator] = useState('AND');
   const [logicDropdownOpen, setLogicDropdownOpen] = useState(false);
 
   // String filter options
@@ -106,16 +109,7 @@ export default function RecordFilter({
   // Decide which operator list to use
   const operatorOptions = selectedFieldObj?.is_num ? numericOptions : stringOptions;
 
-  // ==================
-  // Use Effects 
-  // ==================
 
-  useEffect(() => {
-    // Reset filters when the page id changes
-    if (id) {
-      setFilters([]);
-    }
-  }, [id]);
 
   // ================== 
   // Handler Functions
@@ -163,7 +157,7 @@ export default function RecordFilter({
     <Box className="w-full mb-4">
 
       {/* Field Selection */}
-      <Box className="z-20 flex-row items-center gap-2 mb-4 justify-between">
+      <Box className="z-30 flex-row items-center gap-2 mb-4 justify-between">
         <Text style={{ color: colours.text }}>Filter Field:</Text>
         <DropDownPicker
           open={fieldDropdownOpen}
@@ -189,7 +183,7 @@ export default function RecordFilter({
 
       {/* Operator Selection */}
       {selectedField && (
-        <Box className="z-10 flex-row items-center gap-2 mb-4 justify-between">
+        <Box className="z-20 flex-row items-center gap-2 mb-4 justify-between">
           <Text style={{ color: colours.text }}>Operator:</Text>
           <DropDownPicker
             open={operatorDropdownOpen}
@@ -243,7 +237,7 @@ export default function RecordFilter({
 
       {/* Logical Operator Selection */}
       {filters.length > 0 && (
-        <Box className="z-0 flex-row items-center gap-2 mb-4 justify-between">
+        <Box className="z-10 flex-row items-center gap-2 mb-4 justify-between">
           <Text style={{ color: colours.text }}>Combine Filters With:</Text>
           <DropDownPicker
             open={logicDropdownOpen}

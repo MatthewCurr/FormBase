@@ -112,8 +112,9 @@ export default function FormBase({
    * @param {string} field - The field name (key in formData)
    * @param {string} value - The new text value
    */
-  const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+  const handleChange = (field, is_num, value) => {
+    const formValue = is_num ? Number(value) : value
+    setFormData({ ...formData, [field]: formValue });
   };
 
   // Handle submit with haptics feedback
@@ -135,8 +136,12 @@ export default function FormBase({
           return !hasPhoto;
         }
 
-        // Else check for normal text fields
-        return !formData[field.name]?.trim()
+        if (field.is_num) {
+          return !formData[field.name]
+        } else {
+          // Else check for normal text fields
+          return !formData[field.name]?.trim()
+        }
       });
 
     // Alert for required fields not filled
@@ -263,7 +268,7 @@ export default function FormBase({
               }
               setValue={(callback) => {
                 const value = callback(formData[field.name]);
-                handleChange(field.name, value);
+                handleChange(field.name, field.is_num, value);
               }}
               placeholder={field.placeholder || 'Select an option'}
               style={{
@@ -379,7 +384,7 @@ export default function FormBase({
             <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
             <TextInput
               value={formData[field.name]}
-              onChangeText={(value) => handleChange(field.name, value)}
+              onChangeText={(value) => handleChange(field.name, field.is_num, value)}
               placeholder={field.placeholder}
               placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
               multiline={field.multiline || false}

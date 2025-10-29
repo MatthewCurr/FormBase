@@ -18,11 +18,11 @@ FormBase makes it easy to build and maintain forms in mobile applications withou
 
 1. **Download the Project**  
 
-   Download or clone the project repository and navigate to the project folder in your terminal:
+  Download or clone the project repository and navigate to the project folder in your terminal:
 
-   ```bash
-   cd [project-directory]
-   ```
+  ```bash
+  cd [project-directory]
+  ```
 
 2. **Install Dependencies**
 
@@ -44,7 +44,7 @@ FormBase makes it easy to build and maintain forms in mobile applications withou
 
 ## Teaching Code Use
 
-Lecture Slides and Tutorial Code from the **COMP2140 Team** was utilised to:
+Lecture Slides and Tutorial Code from the **COMP2140 Team** were utilised to:
 
 - Create the Location Component of the form.
 - Create the Image Picker Component of the form.
@@ -64,4 +64,4 @@ Lecture Slides and Tutorial Code from the **COMP2140 Team** was utilised to:
 
 **ChatGPT and GitHub Copilot** were also used to:
 
-- Add Comprehensive comments and documentation through the code.
+- Add Comprehensive comments and documentation throughout the code.

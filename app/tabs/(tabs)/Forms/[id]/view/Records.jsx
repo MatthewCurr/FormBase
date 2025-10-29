@@ -180,11 +180,10 @@ export default function FormListScreen() {
     try {
       setLoading(true);
 
-      // Applied Filters: {"1": {"operator": "equals", "value": "Test"}, "4": {"operator": "gt", "value": "Osjffe"}}
-
       // Fetch and Set Records
       const records = await getFilteredRecords(id, appliedFilters, logicOperator);
       
+      // Update state with filtered records
       setRecords(records);
 
     } catch (err) {
@@ -193,7 +192,7 @@ export default function FormListScreen() {
       setLoading(false);
     } finally {
       setLoading(false);  
-      // setFilterMenuOpen(false);
+      setFilterMenuOpen(false);
     }
   };
 

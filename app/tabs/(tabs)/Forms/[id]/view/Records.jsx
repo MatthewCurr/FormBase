@@ -268,8 +268,8 @@ export default function FormListScreen() {
 
         {/* Show message if no forms exist */}
         {records.length === 0 ? (
-          <Center className="flex-1">
-            <Text className="text-lg text-center" style={{ color: colours.text, opacity: 0.6 }}>
+          <Center className="flex-1 pb-10 m-10">
+            <Text className="text-xl font-semibold text-center" style={{ color: colours.text, opacity: 0.8 }}>
               No records yet. Created records will appear here!
             </Text>
           </Center>

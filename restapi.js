@@ -239,8 +239,10 @@ export async function getFilteredRecords(form_id, filters, logic) {
       return `values->>${(f.field)}.ilike.*${(f.value)}*`;
     } else if (f.operator === 'starts') { // startsWith
       return `values->>${(f.field)}.ilike.${(f.value)}*`;
-    } else { // eq, gt, lt, gte, lte
+    } else if (f.operator === 'eq') { // eq, gt, lt, gte, lte
       return `values->>${(f.field)}.${f.operator}.${(f.value)}`;
+    } else {
+      return `values->${(f.field)}.${f.operator}.${(f.value)}`;
     }
   });
 

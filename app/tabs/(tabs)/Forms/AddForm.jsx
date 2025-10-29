@@ -55,6 +55,7 @@ export default function AddForm() {
       await createForm(formData); // API call to create form
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       router.push('/tabs/Forms'); // Go back to Forms list
+      setFormData({}) // Reset Form Data
     } catch (err) {
       console.error(err);
       alert('Failed to save form.');

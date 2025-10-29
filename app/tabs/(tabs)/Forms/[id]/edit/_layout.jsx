@@ -1,12 +1,23 @@
+// _layout.jsx - Edit Form Tabs Layout
+
+// ================================
+// React & Navigation Imports
+// ================================
 import { Tabs, useRouter } from 'expo-router';
+import { useTheme } from '@react-navigation/native';
+
+// ================================
+// Custom Component & Icon Imports
+// ================================
 import { Ionicons } from '@expo/vector-icons';
 import HapticButton from '@/components/custom/HapticButton'
 
-import { useTheme } from '@react-navigation/native';
-
+/**
+ * Layout component for Edit Form Tabs.
+ */
 export default function EditTabsLayout() {
-  const router = useRouter();
-  const colours = useTheme().colors; 
+  const router = useRouter(); // Navigation router
+  const colours = useTheme().colors; // Theme colours
 
   return (
     <Tabs

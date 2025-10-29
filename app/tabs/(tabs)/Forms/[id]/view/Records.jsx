@@ -1,10 +1,10 @@
-// Forms.jsx
+// Forms.jsx - Records View for a Form
 
 // ================================
 // React & React Native Imports
 // ================================
 import { useState, useEffect, useCallback } from 'react';
-import { Alert, TouchableOpacity } from 'react-native';
+import { Alert } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 
 // ================================
@@ -46,10 +46,8 @@ import { getRecords, getFilteredRecords, deleteRecord,
  * This screen utilises the REST API to fetch and manage form data.  
  */
 export default function FormListScreen() {
-  const router = useRouter();
   const colours = useTheme().colors; // Theme colours
-
-  const { id } = useGlobalSearchParams();
+  const { id } = useGlobalSearchParams(); // Form ID
 
   // ===================
   // State Variables
@@ -176,6 +174,11 @@ export default function FormListScreen() {
     }
   };
 
+  /**
+   * Applies filters to the record list.
+   * @param {*} appliedFilters - The filters to apply.
+   * @param {*} logicOperator - The logic operator to use (AND/OR).
+   */
   const handleApplyFilters = async (appliedFilters, logicOperator) => {
     try {
       setLoading(true);
@@ -192,11 +195,11 @@ export default function FormListScreen() {
       setLoading(false);
     } finally {
       setLoading(false);  
-      setFilterMenuOpen(false);
+      setFilterMenuOpen(false); // Close filter menu
     }
   };
 
-
+  // Clears all applied filters and reloads records.
   const handleClearFilters = () => {
     fetchRecords();
     setFilterMenuOpen(false);

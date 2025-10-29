@@ -1,22 +1,31 @@
-// components/custom/RecordDisplay.jsx
+// RecordDisplay.jsx - Display List for All Records
 
-import HapticButton from '@/components/custom/HapticButton';
+// ================================
+// React Native Imports
+// ================================
+import { FlatList } from 'react-native'
+
+// ================================
+// UI Component Imports
+// ================================
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import React from 'react';
-import { FlatList, View } from 'react-native'
+
+// ================================
+// Custom Component Imports
+// ================================
 import RecordItem from '@/components/custom/RecordItem'
 
 /**
  * Displays a single form entry with Edit and Delete buttons.
  *
  * @param {Object} props
- * @param {Object} props.item - The form data (id and recorded fields).
+ * @param {Object} props.record - The record data (id and recorded fields).
  * @param {Object} props.colours - Theme colours for background/text.
  * @param {ReactElement} children - Child Components to render in display. 
- */
+ * @returns {JSX.Element} The rendered record card.
+*/
 export default function RecordDisplay({ record, colours, children }) {
-
   return (
     <Box
       className="mx-2 mb-4 p-4 rounded-xl"
@@ -29,6 +38,7 @@ export default function RecordDisplay({ record, colours, children }) {
       >
         Record ID #{record.id}
       </Text>
+
       {/* Render record list */}
       <FlatList
         data={Object.entries(record.values || {}).map(([key, value]) => ({ key, value }))}

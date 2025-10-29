@@ -1,5 +1,15 @@
+// HapticButton.jsx - A button component with haptic feedback
+
+// ================================
+// React & Native Imports
+// ================================
+
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
+
+// ================================
+// Haptics Import
+// ================================
 import * as Haptics from 'expo-haptics';
 
 /**
@@ -23,6 +33,8 @@ export default function HapticButton({
   disabled = false,
   activeOpacity = 0.7,
 }) {
+
+  // Handle button press with haptic feedback
   const handlePress = async () => {
     try {
       // Trigger the appropriate haptic feedback
@@ -44,6 +56,7 @@ export default function HapticButton({
     }
   };
 
+  // Render Component
   return (
     <TouchableOpacity
       onPress={handlePress}

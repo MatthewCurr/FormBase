@@ -1,10 +1,15 @@
-// components/custom/RecordDisplay.jsx
+// RecordItem.jsx - Component for Displaying per Record 
 
-import HapticButton from '@/components/custom/HapticButton';
+// ================================
+// React Native Imports
+// ================================
+import { Image, Dimensions } from 'react-native'
+
+// ================================
+// UI Component Imports
+// ================================
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import React from 'react';
-import { FlatList, View, Image, Dimensions } from 'react-native'
 
 // Get the screen width and height for styling
 const { height } = Dimensions.get("window");
@@ -13,7 +18,7 @@ const { height } = Dimensions.get("window");
  * Displays a single form entry with Edit and Delete buttons.
  *
  * @param {Object} props
- * @param {Object} props.item - The form data (id and recorded fields).
+ * @param {Object} props.item - A record entry containing a field name and value.
  * @param {Object} props.colours - Theme colours for background/text.
  */
 export default function RecordItem({ item, colours }) {
@@ -32,6 +37,9 @@ export default function RecordItem({ item, colours }) {
     (value.startsWith('file://') &&
     (value.endsWith('.jpg') || value.endsWith('.png') || value.endsWith('.jpeg')));
 
+  // ===============================
+  // Component Render
+  // ===============================
   return (
     <Box
       className="flex-col gap-1 mb-4"

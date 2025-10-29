@@ -1,33 +1,74 @@
+// EditField.jsx - Component for Adding a New Field to a Form
+
+// ================================
+// React & React Native Imports
+// ================================
 import { useState, useEffect } from 'react';
+import { Text, TextInput, Alert, View, Switch } from 'react-native';
+
+// ================================
+// Navigation and Theme Imports
+// ================================
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import { useTheme } from '@react-navigation/native';
+
+// ================================
+// UI Component Imports
+// ================================
+import { Box } from '@/components/ui/box';
+
+// ================================
+// Custom Component Imports
+// ================================
 import FormBase from '@/components/custom/FormForm';
+
+// ================================
+// Haptics & API Imports
+// ================================
 import * as Haptics from 'expo-haptics';
 import { createField, getFields } from '@/restapi';
 
-import { Box } from '@/components/ui/box';
 
-import { Text, TextInput, Alert, View, Switch } from 'react-native';
+/**
+ * Add a new form field.
+ * @returns {JSX.Element}
+ */
+export default function AddField() {
+  const router = useRouter(); // Navigation router
+  const { id } = useGlobalSearchParams(); // ID of Form to add field to
 
-export default function AddForm() {
-  const router = useRouter();
-  const { id } = useGlobalSearchParams(); 
+  // ===================
+  // State Variables
+  // ===================
 
+  // Form Data State
   const [formData, setFormData] = useState({ name: '', field_type: '', required: false, is_num: false });
 
+  // Form Fields Definition
   const formFields = [
     { name: 'name', label: 'Field Name', placeholder: 'Enter Field Name', required: true},
     { name: 'field_type', label: 'Field Type', placeholder: 'Enter Field Type', required: true, 
       type: 'dropdown', options: ["Text", "Multiline", "DropDown", "Image", "Location"]},
   ];
-  
+
+  // Title and Button Text
   const titles = ["Add a Field"]
   const buttons = ["Add Field"]
+  
+  // ===================
+  // Use Effects
+  // ===================
 
+  // Reset form data when form ID changes
   useEffect(() => {
     setFormData({ name: '', field_type: '', required: false, is_num: false });
   }, [id])
 
+  // ===================
+  // Form Handlers
+  // ===================
+
+  // Handle Form Submission
   const handleSubmit = async () => {
 
     // First, check if dropdown options are required
@@ -47,8 +88,6 @@ export default function AddForm() {
         name: typeof formData.name === 'string' ? formData.name.trimEnd() : formData.name
       };
 
-      console.log('Cleaned Form Data:', cleanedFormData);
-
       // Add order_index into the API payload
       const payload = { ...cleanedFormData, order_index, form_id: id };
 
@@ -66,6 +105,9 @@ export default function AddForm() {
     }
   };
 
+  // ===================
+  // UI Rendering
+  // ===================
   return (
     <FormBase
       formData={formData}
@@ -84,6 +126,7 @@ export default function AddForm() {
             Dropdown Options
           </Text>
 
+          {/* Comma separated options input */}
           <TextInput
             value={formData["options"] || ''}
             onChangeText={(value) => {

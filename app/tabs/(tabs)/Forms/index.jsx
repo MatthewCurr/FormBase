@@ -1,4 +1,4 @@
-// Forms.jsx
+// Forms.jsx - Main Forms List Screen
 
 // ================================
 // React & React Native Imports
@@ -24,7 +24,6 @@ import { FlatList } from '@/components/ui/flat-list';
 // Custom Component Imports
 // ================================
 import FormItem from '@/components/custom/FormItem';
-
 import PlusIcon from '@/assets/icons/Plus';
 
 // ================================
@@ -41,7 +40,7 @@ import { getForms, deleteForm } from '@/restapi';
  * This screen utilises the REST API to fetch and manage form data.  
  */
 export default function FormListScreen() {
-  const router = useRouter();
+  const router = useRouter(); // Navigation router
   const colours = useTheme().colors; // Theme colours
 
   // ===================
@@ -54,7 +53,6 @@ export default function FormListScreen() {
   // Loading and Error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
 
   // ===================
   // Use Effects
@@ -73,8 +71,7 @@ export default function FormListScreen() {
   const fetchForms = async () => {
     try {
       setLoading(true);
-      const forms = await getForms();
-      console.log('Fetched forms:', forms);
+      const forms = await getForms(); // Fetch all forms from api.
       setForms(forms);
     } catch (err) {
       console.error('Error fetching forms:', err);

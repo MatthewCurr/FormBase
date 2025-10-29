@@ -1,9 +1,9 @@
-// AddRecord.jsx
+// AddRecord.jsx - Add Record to Form Screen
 
 // ================================
 // React & React Native Imports
 // ================================
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 
 // ================================
@@ -32,12 +32,15 @@ import HapticButton from '@/components/custom/HapticButton'
 import * as Haptics from 'expo-haptics';
 import { getFields, deleteField, createRecord } from '@/restapi';
 
-
+/**
+ * Add a new record to the form.
+ * @returns {JSX.Element}
+ */
 export default function AddRecord() {
-  const router = useRouter();
+  const router = useRouter(); // Navigation router
   const colours = useTheme().colors; // Theme colours
 
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams(); // Form ID
 
   // ===================
   // State Variables
@@ -52,6 +55,7 @@ export default function AddRecord() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Title and Button Text
   const titles = ["Add a Record"]
   const buttons = ["Add Record"]
 
@@ -88,6 +92,7 @@ export default function AddRecord() {
     }
   };
 
+  // Map fetched fields to form structure, suitable for FormBase component
   function mapFetchedToForm(fields) {
     return fields.map((f) => ({
       name: f.name,
@@ -106,14 +111,14 @@ export default function AddRecord() {
   // Form Handlers
   // ===================
 
+  // Navigate to EditField screen to add fields
   const handleEditPress = () => {
     router.push(`tabs/Forms/${id}/edit/EditField`)
   }
 
+  // Handle Form Submission
   const handleSubmit = async () => {
-
     try {
-
       // Add form_id foreign key into the API payload
       const payload = {
         form_id: id,
@@ -123,6 +128,7 @@ export default function AddRecord() {
       // Create the Field Data in the API
       await createRecord(payload);
 
+      // Provide haptic feedback
       await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
       // Reset Form Data
@@ -142,16 +148,21 @@ export default function AddRecord() {
 
       {/* Show message if no fields exist */}
       {fields.length === 0 ? (
-        <Center className="flex-1 px-4 -mt-8 gap-4">
+        <Center className="flex-1 px-4 -mt-8 gap-1">
           <Text 
             className="text-lg text-center font-semibold"
-            style={{ color: colours.text, opacity: 0.6 }}
+            style={{ color: colours.text, opacity: 1 }}
           >
-            No fields yet. Add a field to this form!
+            No Fields Yet.
+          </Text>
+          <Text 
+            className="text-lg text-center font-semibold"
+            style={{ color: colours.text, opacity: 0.8 }}
+          >Add a field to this form!
           </Text>
           <HapticButton
-            className="px-10 m-2 rounded-lg items-center"
-            style={{ backgroundColor: colours.primary }}
+            className="px-10 py-3 mt-8 rounded-xl items-center"
+            style={{ backgroundColor: colours.card, borderWidth: 2, borderColor: colours.primary }}
             onPress={() => handleEditPress()}
           >
             <Text style={{ color: colours.text }} className="text-xl font-semibold">

@@ -1,4 +1,4 @@
-// Map.jsx
+// Map.jsx - Map View for Form Records
 
 // ================================
 // React & React Native Imports
@@ -11,11 +11,13 @@ import { Text } from 'react-native';
 // ================================
 import { useFocusEffect } from '@react-navigation/native';
 import { useGlobalSearchParams } from 'expo-router';
+import { useTheme } from '@react-navigation/native';
 
 // ================================
 // UI Component Imports
 // ================================
 import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
 
 // ================================
 // Custom Component Imports
@@ -28,8 +30,8 @@ import MapCustom from '@/components/custom/MapCustom'
 import { getRecords } from '@/restapi';
 
 export default function FormMap() {
-  
-  const { id } = useGlobalSearchParams();
+  const colours = useTheme().colors; // Theme colours
+  const { id } = useGlobalSearchParams(); // Form ID
 
   // ===================
   // State Variables
@@ -72,8 +74,6 @@ export default function FormMap() {
         });
       });
 
-      console.log(locationRecords);
-
       // Set Records for use in rendering.
       setRecords(locationRecords);
 
@@ -86,19 +86,29 @@ export default function FormMap() {
     }
   };
 
+  // ===================
+  // Render Component
+  // ===================
   return (
     <Box style={{ padding: 20 }}>
       
-      {loading ? (
-        <Text>Loading map...</Text>
-      ) : error ? (
+      {loading ? ( // Loading State
+        <Center className="mt-40">
+          <Text style={{ color: colours.text}} className="font-semibold text-xl">
+            Loading...
+          </Text>
+        </Center>
+      ) : error ? ( // Error State
         <Text>{error}</Text>
-      ) : records ? (
+      ) : records.length > 0 ? ( // If there are records with location data
         <MapCustom records={records} />
       ) : (
-        <Text>This Form does not have any records with locations.</Text>
+        <Center className="mt-40">
+          <Text style={{ color: colours.text, textAlign: 'center'}} className="font-semibold text-xl">
+            This form does not have any records with locations. Add records with location data to view here.
+          </Text>
+        </Center>
       )}
-
     </Box>
   );
 }

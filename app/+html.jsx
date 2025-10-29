@@ -1,6 +1,10 @@
-import { ScrollViewStyleReset } from 'expo-router/html';
+// React Native / FormBase / app / +html.jsx
+// +html.jsx - Root HTML structure for web rendering
 
-import React from 'react';
+// ================================
+// React & Expo Imports
+// ================================
+import { ScrollViewStyleReset } from 'expo-router/html';
 
 // This file is web-only and used to configure the root HTML for every
 // web page during static rendering.

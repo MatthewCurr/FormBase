@@ -1,4 +1,4 @@
-// Photo.jsx
+// Photo.jsx - Photo Selector Component
 
 // ================================
 // React Native Imports
@@ -18,7 +18,7 @@ const { height } = Dimensions.get("window");
  */
 export default function Photo({ hasPhoto, photoState }) {
     if (hasPhoto) {
-      console.log("Photo URI:", photoState.uri);
+        console.log("Photo URI:", photoState.uri);
         return (
             <View>
                 <Image

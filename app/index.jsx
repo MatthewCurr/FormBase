@@ -10,6 +10,36 @@ import { useTheme } from '@react-navigation/native';
 
 import { useColorScheme } from '@/components/useColorScheme';
 
+
+/*
+
+TO DO
+
+- Add Image Picker -- DONE 
+
+- Add Marker to Map -- With Record Information when clicked.  -- DONE
+
+- Store Images in Records and Display in Record View -- DONE
+
+- Add Location to Form View, Button that asks for permission than returns user location in lat and long -- and also stores. -- DONE
+
+- Filter on Record Screen - DONE I THINK DOUBLE CHECK AND STRESS TEST 
+
+-- Add Error / Loading Renders to each page. 
+
+-- Page Function and InLine Comments
+
+-- Button to quickly go from edit fields to add record and vice versa?
+
+
+
+
+*/
+
+
+
+
+
 export default function Home() {
   const router = useRouter();
 

@@ -1,54 +1,48 @@
+// RecordFilter.jsx - Filter Menu for Record List.
+
 // ================================
 // React & React Native Imports
 // ================================
-
-import { useState, useEffect } from 'react';
-import {  Alert, View, Text, TextInput, FlatList,
-          TouchableOpacity, useColorScheme } from 'react-native';
-
-import MapView from 'react-native-maps';
-
-// ================================
-// Location and Image Imports
-// ================================
-import * as Location from 'expo-location';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system/legacy';
+import { useState } from 'react';
+import {  Alert,Text, TextInput } from 'react-native';
 
 // ================================
 // Navigation and Theme Imports
 // ================================
-
-import { useTheme } from '@react-navigation/native';
 import { useGlobalSearchParams } from 'expo-router';
 
 // ================================
 // UI Component Imports
 // ================================
-
-import { Divider } from '@/components/ui/divider';
-import { Center } from '@/components/ui/center';
 import { Box } from '@/components/ui/box';
-import { Heading } from '@/components/ui/heading';
 
 import DropDownPicker from 'react-native-dropdown-picker';
-import PlusIcon from '@/assets/icons/Plus'; // Submit Icon
-import Fontisto from '@expo/vector-icons/Fontisto';
 
 // ================================
 // Custom Component Imports
 // ================================
 import HapticButton from '@/components/custom/HapticButton'
-import Photo from '@/components/custom/Photo'
-
-// ================================
-// Haptics Imports
-// ================================
-import * as Haptics from 'expo-haptics';
 
 
-/**
-
+/** Provides an interactive filter menu for narrowing down
+ * records in the Record List screen.
+ *
+ * Users can:
+ * - Select a field to filter on (non-image/location fields)
+ * - Choose a comparison operator (string or numeric)
+ * - Input a comparison value
+ * - Combine multiple filters with AND/OR logic
+ * - Apply or clear filters
+ *
+ * @param {Object} props
+ * @param {Object} props.colours - Theme colours for text, background, and borders.
+ * @param {Array} props.fields - List of available form fields to filter on.
+ * @param {Array} props.filters - Current list of applied filters.
+ * @param {Function} props.setFilters - Function to update the active filters array.
+ * @param {string} props.logicOperator - Current logic operator (AND/OR) for combining filters.
+ * @param {Function} props.setLogicOperator - Function to set the logic operator.
+ * @param {Function} props.onApplyFilter - Callback when filters are applied.
+ * @param {Function} props.onClearFilter - Callback when filters are cleared.
  */
 export default function RecordFilter({ 
   colours,
@@ -61,14 +55,10 @@ export default function RecordFilter({
   onClearFilter
 }) {
 
-  const { id } = useGlobalSearchParams();
-
   // ===================
   // State Variables
   // ===================
 
-  // const [filters, setFilters] = useState([]); // Array of filter objects
-  
   const [fieldDropdownOpen, setFieldDropdownOpen] = useState(false);
   const [selectedField, setSelectedField] = useState(null);
   
@@ -79,14 +69,18 @@ export default function RecordFilter({
 
   const [logicDropdownOpen, setLogicDropdownOpen] = useState(false);
 
-  // String filter options
+  // ==============================
+  // Filter Options
+  // ==============================
+
+  // Operators for text-based fields
   const stringOptions = [
     { label: 'Equals', value: 'eq' },
     { label: 'Contains (LIKE)', value: 'contains' },
     { label: 'Starts With', value: 'starts' },
   ];
 
-  // Numeric filter options
+  // Operators for numeric fields
   const numericOptions = [
     { label: 'Equals', value: 'eq' },
     { label: 'Greater Than', value: 'gt' },
@@ -109,13 +103,14 @@ export default function RecordFilter({
   // Decide which operator list to use
   const operatorOptions = selectedFieldObj?.is_num ? numericOptions : stringOptions;
 
-
-
   // ================== 
   // Handler Functions
   // ==================
 
-  // Handle adding a new filter
+  /**
+   * Adds a new filter to the filter list if all required fields are filled.
+   * Alerts the user if any part of the filter is missing.
+   */
   const handleAddFilter = () => {
     if (selectedField && operator && inputValue) {
       setFilters([
@@ -127,11 +122,12 @@ export default function RecordFilter({
         }
       ]);
 
+      // Reset dropdowns and inputs
       setSelectedField(null);
       setOperator(null);
       setInputValue('');
     } else {
-      // Alert user to empty field
+      // Alert user to empty fields
       const emptyFields = [];
       if (!selectedField) emptyFields.push('Field');
       if (!operator) emptyFields.push('Operator');
@@ -141,18 +137,21 @@ export default function RecordFilter({
     }
   };
 
-  // Handle applying filters
+  // Applies all current filters using parent handler.
   const handleApplyFilters = () => {
     onApplyFilter(filters, logicOperator);
   };
 
-  // Handle clearing filters
+  // Clears all filters and resets state
   const handleClearFilters = () => {
     setFilters([]);
     onClearFilter();
   }
 
-  /* Main Content */
+
+  // ==============================
+  // UI Rendering
+  // ==============================
   return (
     <Box className="w-full mb-4">
 
@@ -312,7 +311,6 @@ export default function RecordFilter({
           <Text className="text-white font-semibold">Apply Filters</Text>
         </HapticButton>
       )}
-
     </Box>
   );
 }

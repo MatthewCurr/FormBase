@@ -1,12 +1,24 @@
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Center } from '@/components/ui/center';
+// About.jsx - About Tab Content
+
+// ================================
+// UI Component Imports
+// ================================
 import { Divider } from '@/components/ui/divider';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { Box } from '@/components/ui/box';
-import FileStack from '@/assets/icons/FileStack';
+
 import { useColorScheme } from '@/components/useColorScheme';
 
+// ================================
+// Icon Imports
+// ================================
+import FileStack from '@/assets/icons/FileStack';
+
+/**
+ * About component displaying app information and features.
+ * @returns {JSX.Element}
+ */
 export default function About() {
 
   const colorMode = useColorScheme();
@@ -16,6 +28,9 @@ export default function About() {
   const mainColor = isDark ? '#EBEAE9' : '#5B5551';
   const secondaryColor = isDark ? '#272423' : '#C7C4BF';
 
+  // ===================
+  // Render
+  // ===================
   return (
     <Box className="p-10 items-start">
       {/* Icon and Title */}

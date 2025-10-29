@@ -1,22 +1,32 @@
-import React from 'react';
+// _layout.jsx - Layout for Drawer Navigation
+
+// ================================
+// Navigation Imports
+// ================================
+import { Drawer } from 'expo-router/drawer';
+import { useLocalSearchParams } from 'expo-router';
+
+// ================================
+// Custom Component & Icon Imports
+// ================================
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-import { Drawer } from 'expo-router/drawer';
-import { DarkTheme, useNavigation } from '@react-navigation/native';
-import { Tabs, useLocalSearchParams } from 'expo-router';
+// ================================
+// Custom Hooks Imports
+// ================================
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 
-function DrawerIcon({ name, color }) {
-  return <FontAwesome size={18} style={{ marginRight: 8 }} name={name} color={color} />;
-}
-
+/** 
+ * Layout component for Drawer Navigation.
+ */
 export default function DrawerLayout() {
-  const id = useLocalSearchParams();
-
   const colorScheme = useColorScheme(); // 'light' or 'dark'
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === 'dark'; // Boolean for dark mode
 
+  // ===================
+  // Render
+  // ===================
   return (
     <Drawer
       screenOptions={({ route }) => ({
@@ -32,6 +42,7 @@ export default function DrawerLayout() {
         drawerLabelStyle: { fontSize: 20 },
       })}
     >
+      {/* Drawer Screens */}
       <Drawer.Screen name="Home" options={{ title: 'Home', drawerLabel: 'Home' }} />
       <Drawer.Screen name="Forms/index" options={{ title: 'Forms', drawerLabel: 'Forms' }} />
       <Drawer.Screen name="Forms/AddForm" options={{ title: `Forms`, drawerLabel: 'Create Form'}} />

@@ -1,3 +1,26 @@
+// _layout.jsx - Layout for Tab Navigation
+
+// ================================
+// React & Navigation Imports
+// ================================
+import { ScrollView } from 'react-native';
+import { usePathname, Stack } from 'expo-router';
+
+// ================================
+// UI Component Imports
+// ================================
+import { Box } from '@/components/ui/box';
+import { useColorScheme } from '@/components/useColorScheme';
+
+// ================================
+// Custom Component Imports
+// ================================
+import { LinearGradient } from '@/components/custom/LinearGradient';
+
+
+// ================================
+// Error Boundary Export
+// ================================
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -8,25 +31,29 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 
-import { Stack } from 'expo-router';
-import { ScrollView } from 'react-native';
-import { Box } from '@/components/ui/box';
-import { LinearGradient } from '@/components/custom/LinearGradient';
-import { useColorScheme } from '@/components/useColorScheme';
-import { usePathname } from 'expo-router';
 
+// ================================
+// Layout Component
+// ================================
 export default function AppLayout() {
   
-  const pathname = usePathname();
+  const pathname = usePathname(); // Current path
 
-  const colorMode = useColorScheme();
-  const isDark = colorMode === 'dark';
+  const colorMode = useColorScheme(); // 'light' or 'dark'
+  const isDark = colorMode === 'dark'; // Boolean for dark mode
+
+  // ===================
+  // Gradient Colors
+  // ===================
 
   const gradientColors =
     isDark
       ? ['#166D3B', '#081912'] // darker greens
       : ['#3EB489', '#90EE90']; // lighter greens
 
+  // ===================
+  // Render
+  // ===================
   return (
     <Box className="bg-transparent flex-1">
 
@@ -38,11 +65,12 @@ export default function AppLayout() {
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
 
-      {(pathname === '/tabs/Forms' || pathname.includes('/tabs/Forms/')) ? (
+      {/* Conditional Rendering Based on Pathname */}
+      {(pathname === '/tabs/Forms' || pathname.includes('/tabs/Forms/')) ? ( // For Forms routes
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         </Stack>
-      ) : (
+      ) : ( // For non-Forms routes
         <ScrollView
           style={{ height: '100%', borderColor: 'black'}}
           contentContainerStyle={{ flexGrow: 1 }}

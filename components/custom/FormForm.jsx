@@ -1,3 +1,6 @@
+// React Native / FormBase / components / custom / FormForm.jsx
+// FormForm.jsx - Reusable Form Component
+
 // ================================
 // React & React Native Imports
 // ================================
@@ -7,7 +10,6 @@ import {  Alert, View, Text, TextInput, FlatList,
           TouchableOpacity, useColorScheme } from 'react-native';
 
 import DropDownPicker from 'react-native-dropdown-picker';
-import MapView from 'react-native-maps';
 
 // ================================
 // Location and Image Imports
@@ -19,13 +21,11 @@ import * as FileSystem from 'expo-file-system/legacy';
 // ================================
 // Navigation and Theme Imports
 // ================================
-
 import { useTheme } from '@react-navigation/native';
 
 // ================================
 // UI Component Imports
 // ================================
-
 import { Divider } from '@/components/ui/divider';
 import { Center } from '@/components/ui/center';
 import { Box } from '@/components/ui/box';
@@ -90,7 +90,11 @@ export default function FormBase({
 }) {
 
   const colorScheme = useColorScheme(); // 'dark' or 'light'
-  const colours = useTheme().colors;
+  const colours = useTheme().colors; // Theme colours
+
+  // ===================
+  // State Variables
+  // ===================
 
   // Dropdown State 
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -116,6 +120,7 @@ export default function FormBase({
   const handlePressSubmit = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
+    // Validate required fields
     const missingFields = fields
       .filter(field => field.required) // Only check for required fields
       .filter(field => {
@@ -125,6 +130,7 @@ export default function FormBase({
           return !formData[field.name]?.latitude || !formData[field.name]?.longitude;
         }
 
+        // Check for image fields
         if (field.type === 'image') {
           return !hasPhoto;
         }
@@ -145,8 +151,13 @@ export default function FormBase({
     onSubmit();
   }
 
+  /**
+   * Function to request location permission and get current location
+   * @param {Object} field - The field object from fields array
+   */
   const requestLocation = (field) => {
 
+    // Async function to handle location request
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -157,9 +168,11 @@ export default function FormBase({
         return;
       }
 
+      // Get Current Location
       let loc = await Location.getCurrentPositionAsync({});
-      setLocation(loc.coords);
+      setLocation(loc.coords); // Update local location state
 
+      // Update formData with location object
       setFormData({ ...formData, 
         [field.name]: {
           latitude: loc.coords.latitude,
@@ -167,11 +180,15 @@ export default function FormBase({
         }
       });
 
+      // Alert with retrieved location
       Alert.alert('Location Retrieved', `\nLatitude: ${loc.coords.latitude}, Longitude: ${loc.coords.longitude}`);
-      
     })();
   };
 
+  /**
+   * Function to handle image picker launch and selection
+   * @param {Object} field - The field object from fields array
+   */
   async function handlePhotoPress(field) {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -180,6 +197,7 @@ export default function FormBase({
       quality: 1,
     });
 
+    // If user didn't cancel selection
     if (!result.canceled && result.assets && result.assets.length > 0) {
 
       // Get the source URI of the selected image
@@ -214,11 +232,19 @@ export default function FormBase({
       setPhotoState({});
   }
 
+
+  /**
+   * Function to render each field based on its type
+   * @param {Object} - The item object containing field details
+   */
   const renderField = ({ item: field}) => {
 
     // Check if options is an array
     const optionsArray = Array.isArray(field.options) ? field.options : [];
 
+    // ===================
+    // Render Field Based on Type
+    // ===================
     return (
       <Box key={field.name} className="">
         
@@ -366,8 +392,7 @@ export default function FormBase({
     )
   }
 
-
-  /* Main Content */
+  /* Main Content Render */
   return (
     <Box className="flex-1 m-6">
       {/* Back Button and Form Title */}

@@ -1,10 +1,12 @@
 
-// components/custom/FormItem.jsx
+// FormItem.jsx - Single Form Item Component
 
+// ================================
+// UI and Custom Component Imports
+// ================================
 import HapticButton from '@/components/custom/HapticButton';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import React from 'react';
 
 /**
  * Displays a single form entry with Edit and Delete buttons.

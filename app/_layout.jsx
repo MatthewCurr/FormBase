@@ -1,35 +1,52 @@
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import '@/global.css';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import {
-  ThemeProvider,
-} from '@react-navigation/native';
+// _layout.jsx - Root Layout Component
 
+// ================================
+// React & Navigation Imports
+// ================================
+import { Slot, usePathname } from 'expo-router';
+import { useEffect, useState } from 'react';
+
+// ================================
+// UI Component & Theme Imports
+// ================================
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import '@/global.css'; // Global styles
+import { ThemeProvider } from '@react-navigation/native';
 import { LightThemeCustom, DarkThemeCustom } from '@/theme';
 
+// ================================
+// Icon and Font Imports
+// ================================
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import { useColorScheme } from '@/components/useColorScheme';
-import { Slot, usePathname } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { Fab, FabIcon } from '@/components/ui/fab';
 import { MoonIcon, SunIcon } from '@/components/ui/icon';
 
+// ================================
+// Export Error Boundary
+// ================================
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
+// Prevent auto-hiding of splash screen
 SplashScreen.preventAutoHideAsync();
 
+// ================================
+// Root Layout Component - Renders Navigation and Theme Providers
+// ================================
 export default function RootLayout() {
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
 
-  const [styleLoaded, setStyleLoaded] = useState(false);
+  // ================================
+  // Handle Loading and Errors
+  // ================================
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -43,15 +60,21 @@ export default function RootLayout() {
   return <RootLayoutNav />;
 }
 
+// ================================
+// Root Layout Navigation Component
+// ================================
 function RootLayoutNav() {
-  const pathname = usePathname();
-  const [colorMode, setColorMode] = useState('light');
+  const [colorMode, setColorMode] = useState('light'); // 'light' or 'dark'
 
+  // ===============================
+  // Render
+  // ===============================
   return (
+    // Gluestack UI Provider for theming
     <GluestackUIProvider mode={colorMode}>
       <ThemeProvider value={colorMode === 'dark' ? DarkThemeCustom : LightThemeCustom}>
         <Slot />
-        {/* {pathname === '/' && ( */}
+          {/* Dark/Light Mode Toggle FAB */}
           <Fab
             onPress={() =>
               setColorMode(colorMode === 'dark' ? 'light' : 'dark')
@@ -63,7 +86,6 @@ function RootLayoutNav() {
           >
             <FabIcon as={colorMode === 'dark' ? MoonIcon : SunIcon} />
           </Fab>
-        {/* )} */}
       </ThemeProvider>
     </GluestackUIProvider>
   );

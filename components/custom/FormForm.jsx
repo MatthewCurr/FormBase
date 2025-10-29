@@ -113,7 +113,10 @@ export default function FormBase({
    * @param {string} value - The new text value
    */
   const handleChange = (field, is_num, value) => {
-    const formValue = is_num ? Number(value) : value
+    // Check if field is numeric. 
+    const formValue = is_num
+      ? value === '' ? undefined : Number(value)
+      : value === '' ? undefined : value;
     setFormData({ ...formData, [field]: formValue });
   };
 
@@ -383,7 +386,7 @@ export default function FormBase({
           <Box key={field.name} className="mb-4">
             <Text className="text-base mb-1 font-semibold" style={{ color: colours.text }}>{field.label}</Text>
             <TextInput
-              value={formData[field.name]}
+              value={formData[field.name] ?? ''}
               onChangeText={(value) => handleChange(field.name, field.is_num, value)}
               placeholder={field.placeholder}
               placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#6B7280'}
